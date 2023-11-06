@@ -44,6 +44,7 @@ public class Killer extends ApplicationAdapter {
     private Texture jackImage;
     private Texture queenImage;
     private Texture aceImage;
+    private Texture killerLogo;
     
     // Music
     private Music backgroundMusic;
@@ -80,9 +81,9 @@ public class Killer extends ApplicationAdapter {
         
         // Scenes
         mainMenu = new Scene("images/background.jpg", "music/Ending Theme - Super Mario World.mp3", 0, 0);
-        mainMenu.active = true;
+        mainMenu.enable();
         
-        game = new Scene("images/clear_meadow_background.png", "music/Ending Theme - Super Mario World.mp3", 0, 0);
+        game = new Scene("images/casino.jpg", "music/Tokens, Please! - Super Paper Mario.mp3", 0, 0);
                 
         // Camera
         camera = new OrthographicCamera();
@@ -99,6 +100,7 @@ public class Killer extends ApplicationAdapter {
         clubImage = new Texture("images/suits_club.png");
         diamondImage = new Texture("images/suits_diamond.png");
         heartImage = new Texture("images/suits_heart.png");
+        killerLogo = new Texture("images/main_menu/killer_logo.png");
         
         // Card
         card = new Rectangle();
@@ -109,20 +111,20 @@ public class Killer extends ApplicationAdapter {
         
         // Music
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/Ending Theme - Super Mario World.mp3"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
-        backgroundMusic.setVolume((float) 0.25);
+
         
         // Buttons
-        mainMenu.makeButton((mainMenu.width / 2), 100, (mainMenu.width / 2) - (mainMenu.width / 4), (mainMenu.height / 2) - 50, "Play Game", "playButton");
-        mainMenu.makeButton((mainMenu.width / 2), 100, (mainMenu.width / 2) - (mainMenu.width / 4), (mainMenu.height / 2) - 250, "Quit Game", "quitButton");
-
+        mainMenu.makeButton((mainMenu.width / 2) - (mainMenu.width / 4), (mainMenu.height / 2) - 50, "Play Game", "play");
+        mainMenu.makeButton((mainMenu.width / 2) - (mainMenu.width / 4), (mainMenu.height / 2) - 250, "Quit Game", "quit");
+        
+        game.makeButton((game.width / 2) - (game.width / 4), (game.height / 4) - 50, "Play Card", "playCards");
  
     }
                 
     @Override
     public void render () {
-//        ScreenUtils.clear(1, 0,1, 1);
+        ScreenUtils.clear(1, 1, 1, 1);
+        
         mouseClick();
                
         camera.update();    // Update the camera once every frame.
@@ -131,33 +133,31 @@ public class Killer extends ApplicationAdapter {
         
         batch.begin();  // Starts the new "batch" of drawings for this frame.
             if(mainMenu.active) {
-                mainMenu.draw(batch);
+                mainMenu.draw(batch);                                                                  // Draw the main menu and all of its components
+                batch.draw(killerLogo, mainMenu.x, mainMenu.y);
                 
-                for (Button button: mainMenu.buttons) {
-                    if (button.isClicked((int) clickCoordinates.x, (int) clickCoordinates.y)) {
-                        if(button.getName() == "playButton") {
-                            mainMenu.active = false;
-                            game.active = true;
+                for (Button button: mainMenu.buttons) {                                                 // Check all of main menu's buttons
+                    if (button.isClicked((int) clickCoordinates.x, (int) clickCoordinates.y)) {         // If the button was clicked on...
+                        
+                        if(button.getName() == "play") {                                                // If the button is the play button...             
+                            mainMenu.disable();                                                       // Set main menu to be inactive
+                            game.enable();                                                            // Set game to be active
+                        }
+                        
+                        else if(button.getName() == "quit") {                                           // If the button is the quit button...
+                            Gdx.app.exit();                                                                // End the game
                         }
                     }
                 }
              }
             else if (game.active) {
-                
+                game.draw(batch);
             }
             
 //        batch.setColor(1, 1, 1, 1);
-        
-//        batch.draw(spadeImage, card.x, card.y);
-        
+               
         
         batch.end();
-                        
-        // Check if the click was in any rectangle (a button or a card).
-//        if(clickCoordinates.x >= rectangle.)
-
-        
-
     }
 
     @Override
