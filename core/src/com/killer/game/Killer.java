@@ -22,7 +22,6 @@ public class Killer extends ApplicationAdapter {
     
     private int WIDTH;
     private int HEIGHT;
-    
             
     private OrthographicCamera camera;  // OrthographicCamera helps ensure we can render using our target resolution no matter what the actual screen resolution is.
    
@@ -33,7 +32,8 @@ public class Killer extends ApplicationAdapter {
     
     private Rectangle card;
     
-    // Declares a new three-dimensional vector that will store the converted coordinates
+    // Declares a new three-dimensional vector that will store converted coordinates
+    private Vector3 hoverCoordinates;
     private Vector3 clickCoordinates;
     
     // Images
@@ -52,26 +52,21 @@ public class Killer extends ApplicationAdapter {
     // Buttons
     private Button[] buttons;
         
-    // Detects a mouseClick and documents the coordinates of the click in the clickCoordinates vector
-    private boolean mouseClick() {
-        
-        // If the screen is currently being touched or clicked on, then convert the touch/mouse click coordinates into our camera's coordinate system.
-        if(Gdx.input.isTouched()) {
-            
-            // Sets the clickCoordinates vector to the current touch/mouse coordinates.
-            clickCoordinates.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+    // Detects the mouse and its behavior and also converts "touch" coords to "screen/image" coords 
+    private void mouseDetect() {
+        hoverCoordinates.set(Gdx.input.getX(), Gdx.input.getY(), 0);               // Set hoverCoordinates equal to the x and y position of the mouse
+        camera.unproject(hoverCoordinates);                                  // Convert the touch/mouse hoverCoordinates into screen/image coordinates
 
-            // Converts the touch/mouse coordinates into the camera coordinates
-            camera.unproject(clickCoordinates);
+       
+        if(Gdx.input.isTouched()) {                                                      // If the screen is currently being touched or clicked on...
+            clickCoordinates.set(Gdx.input.getX(), Gdx.input.getY(), 0);           // Set clickCoordinates equal to the x and y position of the mouse
+            camera.unproject(clickCoordinates);                                 // Convert the touch/mouse clickCoordinates into screen/image coordinates 
             
             // Moves the bucket to wherever the user pressed and centers it at that position
             // bucket.x = touchPos.x - 64 / 2;
-            
-            return true;
         }
-        
-        return false;
     }
+    
     
     @Override
     public void create () {
@@ -91,6 +86,7 @@ public class Killer extends ApplicationAdapter {
         
         // Click Coordinates
         clickCoordinates = new Vector3(); 
+        hoverCoordinates = new Vector3();
         
         // SpriteBatch
         batch = new SpriteBatch();
@@ -123,41 +119,38 @@ public class Killer extends ApplicationAdapter {
                 
     @Override
     public void render () {
-        ScreenUtils.clear(1, 1, 1, 1);
+        ScreenUtils.clear(1, 1, 1, 1);                              // Sets the screen to white
+        mouseDetect();                                                      // Detects the mouse and its behavior and also converts "touch" coords to "screen/image" coords
+        camera.update();                                                    // Update the Camera once every frame
+        batch.setProjectionMatrix(camera.combined);               // Tells the SpriteBatch to use the Camera's coordinate system (screen/image coords held in a matrix)
+        batch.begin();                                                      // Starts the new "batch" of drawings for this frame
         
-        mouseClick();
-               
-        camera.update();    // Update the camera once every frame.
-        
-        batch.setProjectionMatrix(camera.combined); // Tells the SpriteBatch to use the camera's coordinate system (matrix).
-        
-        batch.begin();  // Starts the new "batch" of drawings for this frame.
-            if(mainMenu.active) {
-                mainMenu.draw(batch);                                                                  // Draw the main menu and all of its components
-                batch.draw(killerLogo, mainMenu.x, mainMenu.y);
-                
-                for (Button button: mainMenu.buttons) {                                                 // Check all of main menu's buttons
-                    if (button.isClicked((int) clickCoordinates.x, (int) clickCoordinates.y)) {         // If the button was clicked on...
-                        
-                        if(button.getName() == "play") {                                                // If the button is the play button...             
-                            mainMenu.disable();                                                       // Set main menu to be inactive
-                            game.enable();                                                            // Set game to be active
-                        }
-                        
-                        else if(button.getName() == "quit") {                                           // If the button is the quit button...
-                            Gdx.app.exit();                                                                // End the game
-                        }
+        if(mainMenu.active) {                                               // If mainMenu is the active Scene...       
+            mainMenu.draw(batch);                                              // Draw mainMenu and all of its components (buttons)
+            batch.draw(killerLogo, mainMenu.x, mainMenu.y);         // Draw killerLogo on the screen
+
+            for (Button button: mainMenu.buttons) {                            // For each button in mainMenu...
+                button.setMouseHovering(button.checkMouseHover(hoverCoordinates));              
+                if (button.checkMouseClick(clickCoordinates)) {        // If the button was clicked on...
+
+                    if(button.getName() == "play") {                              // If the button is the play button...             
+                        mainMenu.disable();                                          // Set main menu to be inactive
+                        game.enable();                                               // Set game to be active
+                    }
+
+                    else if(button.getName() == "quit") {                         // If the button is the quit button...
+                        Gdx.app.exit();                                              // End the game
                     }
                 }
-             }
-            else if (game.active) {
-                game.draw(batch);
             }
-            
-//        batch.setColor(1, 1, 1, 1);
-               
-        
-        batch.end();
+         }
+        else if (game.active) {
+            game.draw(batch);
+        }
+
+    batch.end();
+    
+    clickCoordinates.set(Vector3.Zero); // Reset clickCoordinates so that the click only registers once
     }
 
     @Override

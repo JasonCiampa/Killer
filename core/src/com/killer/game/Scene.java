@@ -62,7 +62,7 @@ public class Scene {
     // Draws all of the Buttons stored in the Scene on the screen
     private void drawButtons(SpriteBatch batch) { 
         for (int i = 0; i < this.buttons.size(); i++) {            // For every Button in the Scene...
-            this.buttons.get(i).draw(batch);                     // Draw the Button
+            this.buttons.get(i).draw(batch);                    // Draw the Button
         }
     }
     
@@ -81,7 +81,6 @@ public class Scene {
     // Draws the Scene on the screen
     protected void draw(SpriteBatch batch) {
         batch.draw(this.backgroundImage, this.x, this.y);
-//        batch.draw(this.backgroundImage, this.x, this.y, 0, 0, this.width, this.height, 1, 1, 0, 0, 0, 0, 0, false, false);      // Draws the background image of the Scene
         this.drawButtons(batch);    
     }
     
