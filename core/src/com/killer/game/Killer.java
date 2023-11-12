@@ -75,7 +75,7 @@ public class Killer extends ApplicationAdapter {
         HEIGHT = 1080;
         
         // Scenes
-        mainMenu = new Scene("images/background.jpg", "music/Ending Theme - Super Mario World.mp3", 0, 0);
+        mainMenu = new Scene("images/main_menu/background.jpg", "music/Ending Theme - Super Mario World.mp3", 0, 0);
         mainMenu.enable();
         
         game = new Scene("images/casino.jpg", "music/Tokens, Please! - Super Paper Mario.mp3", 0, 0);
@@ -92,10 +92,6 @@ public class Killer extends ApplicationAdapter {
         batch = new SpriteBatch();
    
         // Images
-        spadeImage = new Texture("images/suits_spade.png");
-        clubImage = new Texture("images/suits_club.png");
-        diamondImage = new Texture("images/suits_diamond.png");
-        heartImage = new Texture("images/suits_heart.png");
         killerLogo = new Texture("images/main_menu/killer_logo.png");
         
         // Card
@@ -128,7 +124,7 @@ public class Killer extends ApplicationAdapter {
         if(mainMenu.active) {                                               // If mainMenu is the active Scene...       
             mainMenu.draw(batch);                                              // Draw mainMenu and all of its components (buttons)
             batch.draw(killerLogo, mainMenu.x, mainMenu.y);         // Draw killerLogo on the screen
-
+                        
             for (Button button: mainMenu.buttons) {                            // For each button in mainMenu...
                 button.setMouseHovering(button.checkMouseHover(hoverCoordinates));              
                 if (button.checkMouseClick(clickCoordinates)) {        // If the button was clicked on...

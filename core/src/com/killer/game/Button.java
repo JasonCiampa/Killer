@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 public class Button {
@@ -80,6 +81,11 @@ public class Button {
         }
         
         return false;                                                                                                               // Return false because the Button wasn't clicked on.
+    }
+    
+    // Action to perform when Button is clicked
+    public void clickAction() {
+        System.out.println("Click somehow worked");
     }
     
     // Returns the name of the Button
