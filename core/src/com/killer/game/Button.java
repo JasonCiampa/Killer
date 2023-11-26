@@ -11,11 +11,14 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import javax.swing.event.EventListenerList;
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 public class Button {
+    
+    protected EventListenerList listenerList = new EventListenerList();
     
     // FIELDS//
     private final Texture skin;          // Skin for the Button

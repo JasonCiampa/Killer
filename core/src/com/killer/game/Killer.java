@@ -15,6 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 public class Killer extends ApplicationAdapter {
     
@@ -33,8 +36,8 @@ public class Killer extends ApplicationAdapter {
     private Rectangle card;
     
     // Declares a new three-dimensional vector that will store converted coordinates
-    private Vector3 hoverCoordinates;
-    private Vector3 clickCoordinates;
+    public static Vector3 hoverCoordinates;
+    public static Vector3 clickCoordinates;
     
     // Images
     private Texture spadeImage;
@@ -45,6 +48,9 @@ public class Killer extends ApplicationAdapter {
     private Texture queenImage;
     private Texture aceImage;
     private Texture killerLogo;
+    
+    public Card testCard;
+
     
     // Music
     private Music backgroundMusic;
@@ -78,7 +84,7 @@ public class Killer extends ApplicationAdapter {
         mainMenu = new Scene("images/main_menu/background.jpg", "music/Ending Theme - Super Mario World.mp3", 0, 0);
         mainMenu.enable();
         
-        game = new Scene("images/casino.jpg", "music/Tokens, Please! - Super Paper Mario.mp3", 0, 0);
+        game = new Scene("images/casino/killer_table.jpg", "music/Tokens, Please! - Super Paper Mario.mp3", 0, 0);
                 
         // Camera
         camera = new OrthographicCamera();
@@ -94,12 +100,10 @@ public class Killer extends ApplicationAdapter {
         // Images
         killerLogo = new Texture("images/main_menu/killer_logo.png");
         
-        // Card
-        card = new Rectangle();
-        card.width = spadeImage.getHeight();
-        card.height = spadeImage.getWidth();
-        card.x = (WIDTH / 2) - (card.width / 2);
-        card.y = (HEIGHT / 2)- (card.height / 2);
+        
+        // Card            
+        testCard = new Card(100, 100, Card.SPADE, Card.VALUE_7);
+
         
         // Music
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/Ending Theme - Super Mario World.mp3"));
@@ -110,7 +114,7 @@ public class Killer extends ApplicationAdapter {
         mainMenu.makeButton((mainMenu.width / 2) - (mainMenu.width / 4), (mainMenu.height / 2) - 250, "Quit Game", "quit");
         
         game.makeButton((game.width / 2) - (game.width / 4), (game.height / 4) - 50, "Play Card", "playCards");
- 
+        ChangeSceneButton returnToMenu = game.makeChangeSceneButton((game.width / 2) - (game.width / 4), (game.height / 4) + 50, "Return to Menu", "returnToMenu", mainMenu);
     }
                 
     @Override
@@ -125,9 +129,9 @@ public class Killer extends ApplicationAdapter {
             mainMenu.draw(batch);                                              // Draw mainMenu and all of its components (buttons)
             batch.draw(killerLogo, mainMenu.x, mainMenu.y);         // Draw killerLogo on the screen
                         
-            for (Button button: mainMenu.buttons) {                            // For each button in mainMenu...
+            for (Button button: mainMenu.buttons) {                                                         // For each button in mainMenu...
                 button.setMouseHovering(button.checkMouseHover(hoverCoordinates));              
-                if (button.checkMouseClick(clickCoordinates)) {        // If the button was clicked on...
+                if (button.checkMouseClick(clickCoordinates)) {                                  // If the button was clicked on...
 
                     if(button.getName() == "play") {                              // If the button is the play button...             
                         mainMenu.disable();                                          // Set main menu to be inactive
@@ -142,6 +146,7 @@ public class Killer extends ApplicationAdapter {
          }
         else if (game.active) {
             game.draw(batch);
+            testCard.draw(batch);
         }
 
     batch.end();

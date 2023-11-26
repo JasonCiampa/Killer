@@ -45,7 +45,14 @@ public class Scene {
     protected void makeButton(int x, int y, String text, String buttonName) {
         Button button = new Button(x, y, text, buttonName);                                    // Calls the Button constructor to make a new Button with all of the passed in details
         buttons.add(button);                                                                      // Adds the Button to the Scene's ArrayList of Buttons
-    }    
+    } 
+    
+    // Creates a new Button object and adds it to the Scene's ArrayList of Buttons.
+    protected ChangeSceneButton makeChangeSceneButton(int x, int y, String text, String buttonName, Scene next) {
+        ChangeSceneButton button = new ChangeSceneButton(x, y, text, buttonName, this, next);                                                     // Calls the Button constructor to make a new Button with all of the passed in details
+        buttons.add(button);                                                                                       // Adds the Button to the Scene's ArrayList of Buttons
+        return button;
+    }
     
     // Plays the Scene's background music
     private void playMusic() {
