@@ -59,36 +59,11 @@ public class Button {
 
     
     // METHODS // 
-    
-    // Checks if the Button is being hovered over
-    public boolean checkMouseHover(Vector3 coordinates) {
-        int mouseX = (int) coordinates.x;                                                                                           // Sets mouseX equal  to the x-coord in the given coordinate system
-        int mouseY = (int) coordinates.y;                                                                                           // Sets mouseY equal to the y-coord in the given coordinate system
-        
-        if ((mouseX >= this.x && mouseX <= (this.x + this.width)) && (mouseY >= this.y && mouseY <= (this.y + this.height))) {      // If the mouse position is inside of the Button....
-            return true;                                                                                                 // Set the Button's mouseHovering state to true.
-        }
-        
-        return false;                                                                                                 // Set the Button's mouseHovering state to false.
-    }
-   
-    
-    // Checks if the Button was clicked on
-    public boolean checkMouseClick(Vector3 coordinates) {
-        int mouseX =  (int) coordinates.x;                                                                                          // Sets mouseX equal to the x-coord in the given coordinate system
-        int mouseY = (int) coordinates.y;                                                                                           // Sets mouseY equal to the y-coord in the given coordinate system
-        
-        if ((mouseX >= this.x && mouseX <= (this.x + this.width)) && (mouseY >= this.y && mouseY <= (this.y + this.height))) {      // If the location of the mouse pointer when the click occurred is inside the Button...
-            this.clickSfx.play();                                                                                                       // Play the Button click sound effect
-            return true;                                                                                                                // Return true because the Button was clicked on.
-        }
-        
-        return false;                                                                                                               // Return false because the Button wasn't clicked on.
-    }
+
     
     // Action to perform when Button is clicked
     public void clickAction() {
-        System.out.println("Click somehow worked");
+        this.clickSfx.play();
     }
     
     // Returns the name of the Button
@@ -104,6 +79,16 @@ public class Button {
     // Returns the height of the Button
     public int getHeight() {
         return this.height;
+    }
+    
+    // Returns the x-coordinate of the Button
+    public int getX() {
+        return this.x;
+    }
+    
+    // Returns the y-coordinate of the Button
+    public int getY() {
+        return this.y;
     }
     
     public void setMouseHovering(boolean isHovering) {

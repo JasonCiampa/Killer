@@ -26,7 +26,7 @@ public class Killer extends ApplicationAdapter {
     private int WIDTH;
     private int HEIGHT;
             
-    private OrthographicCamera camera;  // OrthographicCamera helps ensure we can render using our target resolution no matter what the actual screen resolution is.
+    private static OrthographicCamera camera;  // OrthographicCamera helps ensure we can render using our target resolution no matter what the actual screen resolution is.
    
     private Scene mainMenu;
     private Scene game;
@@ -35,9 +35,8 @@ public class Killer extends ApplicationAdapter {
     
     private Rectangle card;
     
-    // Declares a new three-dimensional vector that will store converted coordinates
-    public static Vector3 hoverCoordinates;
-    public static Vector3 clickCoordinates;
+    // Declares a new three-dimensional vector that will store the coordinates of the mouse cursor
+    public static Vector3 mouseCoordinates;
     
     // Images
     private Texture spadeImage;
@@ -58,19 +57,30 @@ public class Killer extends ApplicationAdapter {
     // Buttons
     private Button[] buttons;
         
-    // Detects the mouse and its behavior and also converts "touch" coords to "screen/image" coords 
-    private void mouseDetect() {
-        hoverCoordinates.set(Gdx.input.getX(), Gdx.input.getY(), 0);               // Set hoverCoordinates equal to the x and y position of the mouse
-        camera.unproject(hoverCoordinates);                                  // Convert the touch/mouse hoverCoordinates into screen/image coordinates
-
-       
-        if(Gdx.input.isTouched()) {                                                      // If the screen is currently being touched or clicked on...
-            clickCoordinates.set(Gdx.input.getX(), Gdx.input.getY(), 0);           // Set clickCoordinates equal to the x and y position of the mouse
-            camera.unproject(clickCoordinates);                                 // Convert the touch/mouse clickCoordinates into screen/image coordinates 
-            
-            // Moves the bucket to wherever the user pressed and centers it at that position
-            // bucket.x = touchPos.x - 64 / 2;
-        }
+    // Updates the position of the mouse
+    public static void updateMouse() {
+        mouseCoordinates.set(Gdx.input.getX(), Gdx.input.getY(), 0);               // Set mouseCoordinates equal to the x and y position of the mouse
+        camera.unproject(mouseCoordinates);                                  // Convert the touch/mouse coordinates into screen/image coordinates
+    }
+    
+    // Determines whether or not the mouse was clicked.
+    public static boolean checkMouseClick() {
+        if(Gdx.input.isTouched())                                                       // If the mouse has been clicked on...
+            return true;                                                                    // Return true to indicate that the mouse has been clicked
+        else                                                                            // Otherwise...
+            return false;                                                                   // Return false to indicate that the mouse hasn't been clicked
+    }
+    
+        
+    // Checks if the mouse is hovering over a certain rectangle defined by the arguments x, y, width, and height.
+    public static boolean checkMouseHover(int x, int y, int width, int height) {
+        int mouseX = (int) mouseCoordinates.x;                                                                                           // Sets mouseX equal  to the x-coord in the given coordinate system
+        int mouseY = (int) mouseCoordinates.y;                                                                                           // Sets mouseY equal to the y-coord in the given coordinate system
+        
+        if ((mouseX >= x && mouseX <= (x + width)) && (mouseY >= y && mouseY <= (y + height)))                                          // If the mouse is inside of the rectangle...
+            return true;                                                                                                                    // Return true to indicate that the mouse is inside of the rectangle
+        
+        return false;                                                                                                                   // Return false to indicate that the mouse is not inside of the rectangle
     }
     
     
@@ -91,8 +101,7 @@ public class Killer extends ApplicationAdapter {
         camera.setToOrtho(false, WIDTH, HEIGHT);   // Sets window to 1080p
         
         // Click Coordinates
-        clickCoordinates = new Vector3(); 
-        hoverCoordinates = new Vector3();
+        mouseCoordinates = new Vector3(); 
         
         // SpriteBatch
         batch = new SpriteBatch();
@@ -120,7 +129,7 @@ public class Killer extends ApplicationAdapter {
     @Override
     public void render () {
         ScreenUtils.clear(1, 1, 1, 1);                              // Sets the screen to white
-        mouseDetect();                                                      // Detects the mouse and its behavior and also converts "touch" coords to "screen/image" coords
+        updateMouse();                                                      // Updates the mouse's coordinates and checks 
         camera.update();                                                    // Update the Camera once every frame
         batch.setProjectionMatrix(camera.combined);               // Tells the SpriteBatch to use the Camera's coordinate system (screen/image coords held in a matrix)
         batch.begin();                                                      // Starts the new "batch" of drawings for this frame
@@ -130,8 +139,8 @@ public class Killer extends ApplicationAdapter {
             batch.draw(killerLogo, mainMenu.x, mainMenu.y);         // Draw killerLogo on the screen
                         
             for (Button button: mainMenu.buttons) {                                                         // For each button in mainMenu...
-                button.setMouseHovering(button.checkMouseHover(hoverCoordinates));              
-                if (button.checkMouseClick(clickCoordinates)) {                                  // If the button was clicked on...
+                button.setMouseHovering(checkMouseHover(button.getX(), button.getY(), button.getWidth(), button.getHeight()));              
+                if (checkMouseClick()) {                                  // If the button was clicked on...
 
                     if(button.getName() == "play") {                              // If the button is the play button...             
                         mainMenu.disable();                                          // Set main menu to be inactive
@@ -149,9 +158,7 @@ public class Killer extends ApplicationAdapter {
             testCard.draw(batch);
         }
 
-    batch.end();
-    
-    clickCoordinates.set(Vector3.Zero); // Reset clickCoordinates so that the click only registers once
+        batch.end();
     }
 
     @Override

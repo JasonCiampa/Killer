@@ -24,7 +24,7 @@ public class ChangeSceneButton extends Button implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         System.out.println("We're in");
-        checkMouseClick(Killer.clickCoordinates);
+        Killer.checkMouseClick();
         this.current.enable();
         this.next.disable();
     }
