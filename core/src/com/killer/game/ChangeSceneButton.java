@@ -6,8 +6,8 @@ public class ChangeSceneButton extends Button {
     Scene current;
     Scene next;
     
-    public ChangeSceneButton(int x, int y, String text, String name, Scene current, Scene next) {
-        super(x, y, text, name, current);
+    public ChangeSceneButton(int x, int y, String text, Scene current, Scene next) {
+        super(x, y, text, current);
         this.current = current;
         this.next = next;
     }

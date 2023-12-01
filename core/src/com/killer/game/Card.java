@@ -1,10 +1,14 @@
 package com.killer.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import java.util.HashMap;
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 public class Card {
+    
+    // FIELDS
     
     // Constants for all valid Card suits (ordered from lowest influence to highest influence in Killer)
     public static final int SPADE = 0;
@@ -28,7 +32,7 @@ public class Card {
     public static final int VALUE_2 = 12;
    
     // A 2D Array to hold textures (each array represents a suit. each of these arrays holds 13 different skins for the 13 different card values)
-    private static final Texture[][] skins = { 
+    private static final Texture[][] images = { 
         {new Texture("images/cards/spades/spades_0.jpg"), new Texture("images/cards/spades/spades_1.jpg"), new Texture("images/cards/spades/spades_2.jpg"), new Texture("images/cards/spades/spades_3.jpg"), new Texture("images/cards/spades/spades_4.jpg"), new Texture("images/cards/spades/spades_5.jpg"), new Texture("images/cards/spades/spades_6.jpg"), new Texture("images/cards/spades/spades_7.jpg"), new Texture("images/cards/spades/spades_8.jpg"), new Texture("images/cards/spades/spades_9.jpg"), new Texture("images/cards/spades/spades_10.jpg"), new Texture("images/cards/spades/spades_11.jpg"), new Texture("images/cards/spades/spades_12.jpg")}, 
         {new Texture("images/cards/clubs/clubs_0.jpg"), new Texture("images/cards/clubs/clubs_1.jpg"), new Texture("images/cards/clubs/clubs_2.jpg"), new Texture("images/cards/clubs/clubs_3.jpg"), new Texture("images/cards/clubs/clubs_4.jpg"), new Texture("images/cards/clubs/clubs_5.jpg"), new Texture("images/cards/clubs/clubs_6.jpg"), new Texture("images/cards/clubs/clubs_7.jpg"), new Texture("images/cards/clubs/clubs_8.jpg"), new Texture("images/cards/clubs/clubs_9.jpg"), new Texture("images/cards/clubs/clubs_10.jpg"), new Texture("images/cards/clubs/clubs_11.jpg"), new Texture("images/cards/clubs/clubs_12.jpg")}, 
         {new Texture("images/cards/diamonds/diamonds_0.jpg"), new Texture("images/cards/diamonds/diamonds_1.jpg"), new Texture("images/cards/diamonds/diamonds_2.jpg"), new Texture("images/cards/diamonds/diamonds_3.jpg"), new Texture("images/cards/diamonds/diamonds_4.jpg"), new Texture("images/cards/diamonds/diamonds_5.jpg"), new Texture("images/cards/diamonds/diamonds_6.jpg"), new Texture("images/cards/diamonds/diamonds_7.jpg"), new Texture("images/cards/diamonds/diamonds_8.jpg"), new Texture("images/cards/diamonds/diamonds_9.jpg"), new Texture("images/cards/diamonds/diamonds_10.jpg"), new Texture("images/cards/diamonds/diamonds_11.jpg"), new Texture("images/cards/diamonds/diamonds_12.jpg")},
@@ -45,23 +49,47 @@ public class Card {
     private int suit;
     private int value;
     
+    private boolean mouseHovering;
     private boolean selected;       // If the card is clicked on and a part of the user's selected cards
     
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+    // CONSTRUCTOR
     
     public Card(int x, int y, int suit, int value) {
-        this.suit = suit;
-        this.value = value;
-        this.image = this.skins[this.suit][this.value];
-        
+        this.image = this.images[this.suit][this.value];
+
         this.width = this.image.getWidth();
         this.height = this.image.getHeight();
         this.x = x;
         this.y = y;
+        
+        this.suit = suit;
+        this.value = value;
+        
+        this.mouseHovering = false;
+        this.selected = false;
     }
     
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    
+    // METHODS
+    
+    public Texture getImage() {
+        return this.image;
+    }
     
     // Draws the Card onto the screen so it is visible to the user
     public void draw(SpriteBatch batch) {
+        Color currentColor = batch.getColor();
+
+        if(this.selected) {
+            batch.setColor(currentColor.mul((float) 1, (float) 1, (float) 1, 1));
+        }
+        else {
+            batch.setColor(currentColor.mul((float) 0.85, (float) 0.85, (float) 0.85, 1));
+        }
+        
         batch.draw(this.image, this.x, this.y);
     }
     
@@ -73,6 +101,13 @@ public class Card {
     
     // Sets the selected state of the card to the opposite of what it was at the time of the function call
     public void toggleSelected() {
-        this.selected = !this.selected;
+        if (this.mouseHovering && Mouse.checkClick()) {
+            this.selected = !this.selected;
+        }
+    }
+    
+    // Updates the state of the Card
+    public void update() {
+        toggleSelected();
     }
 }
