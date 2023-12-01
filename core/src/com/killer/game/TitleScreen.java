@@ -22,9 +22,9 @@ public class TitleScreen extends Scene {
         
         killerLogo = new Texture("images/main_menu/killer_logo.png");                                                                                                     // Stores the killerLogo texture
         
-        playButton = new ChangeSceneButton((this.width / 2) - (this.width / 4), (this.height / 2) - 50, "Play Game", this, null);         // Creates a playButton that changes the Scene to casinoTable when clicked on
+        playButton = new ChangeSceneButton((this.width / 2) - (this.width / 4), (this.height / 2) - 50, 1, 1, "Play Game", this, null);         // Creates a playButton that changes the Scene to casinoTable when clicked on
             
-        quitButton = new Button((this.width / 2) - (this.width / 4), (this.height / 2) - 250, "Quit Game", this) {                                     // Creates a quitButton
+        quitButton = new Button((this.width / 2) - (this.width / 4), (this.height / 2) - 250, 1, 1,"Quit Game", this) {                                     // Creates a quitButton
             @Override
             public void clickAction() {                                                                                                                                               // Overriding the abstract clickAction method from the Button class                                                                    
                 Gdx.app.exit();                                                                                                                                                       // Quits the program, ends the application

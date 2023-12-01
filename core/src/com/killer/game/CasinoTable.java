@@ -11,7 +11,7 @@ public class CasinoTable extends Scene {
     public CasinoTable() {
         super("images/casino/killer_table.jpg", "music/Tokens, Please! - Super Paper Mario.mp3", 0, 0);
         
-        playButton = new Button((this.width / 2) - (this.width / 4), (this.height / 4) - 50, "Play Selected Cards", this) {                               // Creates a playButton
+        playButton = new Button((this.width / 2) - (Button.skin.getWidth() / 2), (Button.skin.getHeight() - 90), (float) 0.5, (float) 0.5, "Play Selected Cards", this) {                               // Creates a playButton
             @Override
             public void clickAction() {                                                                                                                                                  // Overriding the abstract clickAction method from the Button class
                 // Play cards code will go here
@@ -20,14 +20,14 @@ public class CasinoTable extends Scene {
             }
         };
         
-        quitButton = new ChangeSceneButton((this.width / 2) - (this.width / 4), (this.height / 2) - 50, "Quit to Title Screen", this, null);  // Creates a quitButton that changes the Scene to casinoTable when clicked on
+//        quitButton = new ChangeSceneButton((this.width / 2) - (this.width / 4), (this.height / 2) - 50, (float) 0.5, (float) 0.5, "Quit to Title Screen", this, null);  // Creates a quitButton that changes the Scene to casinoTable when clicked on
 
     }
     
     // Anything that should happen immediately as CasinoTable becomes active should go in load
     @Override
     protected void load() {
-        quitButton.next = Killer.titleScreen;
+//        quitButton.next = Killer.titleScreen;
     }
     
     @Override

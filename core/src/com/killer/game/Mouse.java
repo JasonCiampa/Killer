@@ -48,7 +48,7 @@ public class Mouse {
     // Determines whether or not the mouse was clicked.
     public static boolean checkClick() {
         if(clickCooldown <= 0 && Gdx.input.isTouched()) {                                           // If the mouse has been clicked on...
-            clickCooldown = (float) 0.1;                                                                // Set the clickCooldown to 100 milliseconds
+            clickCooldown = (float) 0.2;                                                                // Set the clickCooldown to 200 milliseconds
             return true;                                                                                // Return true to indicate that the mouse has been clicked
         }
         return false;                                                                               // Return false to indicate that the mouse hasn't been clicked

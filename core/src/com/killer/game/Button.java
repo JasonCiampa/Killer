@@ -5,28 +5,25 @@ package com.killer.game;
 // IMPORTS // 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
-import javax.swing.event.EventListenerList;
-
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 public abstract class Button {
         
     // FIELDS//
-    protected final Texture skin;                                                                                                                                           // Skin for the Button
+    protected final static Texture skin = new Texture("images/buttonSkin.jpg");                                                                                 // Sets the Button skin                                                                                                                                        // Skin for the Button
 
     protected int width;                                                                                                                                                    // Width of the Button (px)
     protected int height;                                                                                                                                                   // Height of the Button (px)
     protected int x;                                                                                                                                                        // x-coordinate of the Button (px)
     protected int y;                                                                                                                                                        // y-coordinate of the Button (px)
-
+    protected float scaleX;                                                                                                                                                 // Scale factor for x-axis
+    protected float scaleY;                                                                                                                                                 // Scale factor for y-axis
+    
     protected String text;                                                                                                                                                  // Text to be displayed on the Button
     protected BitmapFont font;                                                                                                                                              // Font for the Button's text
     protected GlyphLayout textDimensions;                                                                                                                                   // Holds the width and height of the Button's text
@@ -38,13 +35,14 @@ public abstract class Button {
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
     // CONSTRUCTOR //
-    public Button(int x, int y, String text, Scene buttonLocation) {
-        this.skin = new Texture("images/buttonSkin.jpg");                                                                                                       // Sets the Button skin
+    public Button(int x, int y, float scaleX, float scaleY, String text, Scene buttonLocation) {
             
-        this.width = this.skin.getWidth();                                                                                                                                  // Sets the Button width (to the width of the skin)                        
-        this.height = this.skin.getHeight();                                                                                                                                // Sets the Button height (to the height of the skin)    
+        this.width = skin.getWidth();                                                                                                                                  // Sets the Button width (to the width of the skin)                        
+        this.height = skin.getHeight();                                                                                                                                // Sets the Button height (to the height of the skin)    
         this.x = x;                                                                                                                                                         // Sets the x-coordinate of the Button
         this.y = y;                                                                                                                                                         // Sets the y-coordinate of the Button
+        this.scaleX = scaleX;                                                                                                                                               // Sets the scale factor for the x-axis of the Button
+        this.scaleY = scaleY;                                                                                                                                               // Sets the scale factor for the y-axis of the Button
         this.text = text;                                                                                                                                                   // Sets the Button's text    
         this.font = new BitmapFont(Gdx.files.internal("fonts/showcard_gothic.fnt"));                                                                           // Sets the Button's font
         this.textDimensions = new GlyphLayout(this.font, this.text);                                                                                               // Stores the Button's text dimensions
@@ -55,6 +53,7 @@ public abstract class Button {
         
         buttonLocation.buttons.add(this);                                                                                                                                 // Adds the Button into a Scene (represented by buttonLocation)
     }
+    
 
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -108,11 +107,11 @@ public abstract class Button {
     // Draws the Button on the Screen
     protected void draw(SpriteBatch batch) {
         if (this.mouseHovering) {                                                                                                                                        // If the Button is being hovered over by the mouse...
-            Color currentColor = batch.getColor();                                                                                                                          // Get the current drawing color
-            batch.setColor(currentColor.mul((float) 0.5, (float) 0.5, (float) 0.5, 1));                                                                              // Make the color dimmer and darker to indicate a hovering state
+            batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                              // Make the color dimmer and darker to indicate a hovering state
         }
-
-        batch.draw(this.skin, this.x, this.y, 0, 0, this.width, this.height);                                                       // Draws the Button's skin at the Button's x and y coordinates with the Button's specified width and height.
+        
+        batch.draw(skin, this.x, this.y, this.width, this.height);
+//        batch.draw(skin, this.x, this.y, this.x, this.y, this.width, this.height, this.scaleX, this.scaleY, 0, this.x, this.y, this.width, this.height, false, false);
         font.draw(batch, text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));         // Writes the Button's text
         batch.setColor(1, 1, 1, 1);                                                                                                                               // Sets the current drawing color to normal
     }
