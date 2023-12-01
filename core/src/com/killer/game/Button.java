@@ -1,7 +1,8 @@
 package com.killer.game;
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Imports // 
+// IMPORTS // 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -14,12 +15,10 @@ import com.badlogic.gdx.math.Vector3;
 import javax.swing.event.EventListenerList;
 
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-public class Button {
-    
-    protected EventListenerList listenerList = new EventListenerList();
-    
+public abstract class Button {
+        
     // FIELDS//
     private final Texture skin;          // Skin for the Button
 
@@ -40,7 +39,7 @@ public class Button {
     
     
     // CONSTRUCTORS //
-    public Button(int x, int y, String text, String name) {
+    public Button(int x, int y, String text, String name, Scene buttonLocation) {
         this.skin = new Texture("images/buttonSkin.jpg");                                       // Sets the Button skin
             
         this.width = this.skin.getWidth();                                                                  // Sets the Button width (to the width of the skin)                        
@@ -55,15 +54,20 @@ public class Button {
         this.name = name;                                                                                   // Sets the Button's name
         
         this.mouseHovering = false;
+        
+        buttonLocation.buttons.add(this);
     }
 
     
     // METHODS // 
 
+    // Action to perform when Button is clicked on
+    public abstract void clickAction();     
     
-    // Action to perform when Button is clicked
-    public void clickAction() {
+    // Performs the Button's action
+    public void performAction() {
         this.clickSfx.play();
+        this.clickAction();
     }
     
     // Returns the name of the Button
@@ -91,6 +95,12 @@ public class Button {
         return this.y;
     }
     
+    // Returns whether or not the mouse is hovering over the Button
+    public boolean getMouseHovering() {
+        return this.mouseHovering;
+    }
+    
+    // Sets whether or not the mouse is hovering over the Button
     public void setMouseHovering(boolean isHovering) {
         this.mouseHovering = isHovering;
     }
@@ -112,6 +122,4 @@ public class Button {
         font.draw(batch, text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));         // Writes the Button's text
         batch.setColor(1, 1, 1, 1);
     }
-    
-    
 }
