@@ -15,8 +15,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public abstract class Button {
         
     // FIELDS//
-    protected final static Texture skin = new Texture("images/buttonSkin.jpg");                                                                                 // Sets the Button skin                                                                                                                                        // Skin for the Button
+    protected final static Texture[] skins = {new Texture("images/button/longButton.jpg"), new Texture("images/button/shortButton.jpg")};           // Stores the Button skins                                                                                                                                        // Skin for the Button
 
+    public static final int LONG = 0;                                                                                                                                       // Static field to reference a long button
+    public static final int SHORT = 1;                                                                                                                                      // Static field to reference a short button
+    
+    protected final Texture skin;
+    
     protected int width;                                                                                                                                                    // Width of the Button (px)
     protected int height;                                                                                                                                                   // Height of the Button (px)
     protected int x;                                                                                                                                                        // x-coordinate of the Button (px)
@@ -35,8 +40,8 @@ public abstract class Button {
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
     // CONSTRUCTOR //
-    public Button(int x, int y, float scaleX, float scaleY, String text, Scene buttonLocation) {
-            
+    public Button(int buttonType, int x, int y, String text, Scene buttonLocation) {
+        this.skin = skins[buttonType];    
         this.width = skin.getWidth();                                                                                                                                  // Sets the Button width (to the width of the skin)                        
         this.height = skin.getHeight();                                                                                                                                // Sets the Button height (to the height of the skin)    
         this.x = x;                                                                                                                                                         // Sets the x-coordinate of the Button
@@ -111,7 +116,6 @@ public abstract class Button {
         }
         
         batch.draw(skin, this.x, this.y, this.width, this.height);
-//        batch.draw(skin, this.x, this.y, this.x, this.y, this.width, this.height, this.scaleX, this.scaleY, 0, this.x, this.y, this.width, this.height, false, false);
         font.draw(batch, text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));         // Writes the Button's text
         batch.setColor(1, 1, 1, 1);                                                                                                                               // Sets the current drawing color to normal
     }

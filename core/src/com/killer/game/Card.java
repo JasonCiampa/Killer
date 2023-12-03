@@ -32,18 +32,14 @@ public class Card {
     public static final int VALUE_2 = 12;
    
     // A 2D Array to hold textures (each array represents a suit. each of these arrays holds 13 different skins for the 13 different card values)
-    private static final Texture[][] skins = { 
-        {new Texture("images/cards/spades/spades_0.jpg"), new Texture("images/cards/spades/spades_1.jpg"), new Texture("images/cards/spades/spades_2.jpg"), new Texture("images/cards/spades/spades_3.jpg"), new Texture("images/cards/spades/spades_4.jpg"), new Texture("images/cards/spades/spades_5.jpg"), new Texture("images/cards/spades/spades_6.jpg"), new Texture("images/cards/spades/spades_7.jpg"), new Texture("images/cards/spades/spades_8.jpg"), new Texture("images/cards/spades/spades_9.jpg"), new Texture("images/cards/spades/spades_10.jpg"), new Texture("images/cards/spades/spades_11.jpg"), new Texture("images/cards/spades/spades_12.jpg")}, 
-        {new Texture("images/cards/clubs/clubs_0.jpg"), new Texture("images/cards/clubs/clubs_1.jpg"), new Texture("images/cards/clubs/clubs_2.jpg"), new Texture("images/cards/clubs/clubs_3.jpg"), new Texture("images/cards/clubs/clubs_4.jpg"), new Texture("images/cards/clubs/clubs_5.jpg"), new Texture("images/cards/clubs/clubs_6.jpg"), new Texture("images/cards/clubs/clubs_7.jpg"), new Texture("images/cards/clubs/clubs_8.jpg"), new Texture("images/cards/clubs/clubs_9.jpg"), new Texture("images/cards/clubs/clubs_10.jpg"), new Texture("images/cards/clubs/clubs_11.jpg"), new Texture("images/cards/clubs/clubs_12.jpg")}, 
-        {new Texture("images/cards/diamonds/diamonds_0.jpg"), new Texture("images/cards/diamonds/diamonds_1.jpg"), new Texture("images/cards/diamonds/diamonds_2.jpg"), new Texture("images/cards/diamonds/diamonds_3.jpg"), new Texture("images/cards/diamonds/diamonds_4.jpg"), new Texture("images/cards/diamonds/diamonds_5.jpg"), new Texture("images/cards/diamonds/diamonds_6.jpg"), new Texture("images/cards/diamonds/diamonds_7.jpg"), new Texture("images/cards/diamonds/diamonds_8.jpg"), new Texture("images/cards/diamonds/diamonds_9.jpg"), new Texture("images/cards/diamonds/diamonds_10.jpg"), new Texture("images/cards/diamonds/diamonds_11.jpg"), new Texture("images/cards/diamonds/diamonds_12.jpg")},
-        {new Texture("images/cards/hearts/hearts_0.jpg"), new Texture("images/cards/hearts/hearts_1.jpg"), new Texture("images/cards/hearts/hearts_2.jpg"), new Texture("images/cards/hearts/hearts_3.jpg"), new Texture("images/cards/hearts/hearts_4.jpg"), new Texture("images/cards/hearts/hearts_5.jpg"), new Texture("images/cards/hearts/hearts_6.jpg"), new Texture("images/cards/hearts/hearts_7.jpg"), new Texture("images/cards/hearts/hearts_8.jpg"), new Texture("images/cards/hearts/hearts_9.jpg"), new Texture("images/cards/hearts/hearts_10.jpg"), new Texture("images/cards/hearts/hearts_11.jpg"), new Texture("images/cards/hearts/hearts_12.jpg")}  
-    };
-
+    private static final Texture[][] skins = new Texture[5][13];
     
     private int suit;
     private int value;
     
-    private Texture skin;
+    private Texture skinFront;
+    private Texture skinBack;
+    private Texture currentSkin;
             
     private int width;
     private int height;
@@ -59,13 +55,26 @@ public class Card {
     
     public Card(int x, int y, int suit, int value) {
         
+        if (skins[0][0] == null) {                                                                                  // If the Card.skins list hasn't been initialized...                 
+            for (int cardValue = 0; cardValue < 13; cardValue++) {                                                      // For every possible card value...
+                skins[0][cardValue] = new Texture("images/cards/spades/spades_" + cardValue + ".jpg");                      // Add a spades card with the current cardValue to the spades subarray
+                skins[1][cardValue] = new Texture("images/cards//clubs/clubs_" + cardValue + ".jpg");                       // Add a clubs card with the current cardValue to the clubs subarray
+                skins[2][cardValue] = new Texture("images/cards/diamonds/diamonds_" + cardValue + ".jpg");                  // Add a diamonds card with the current cardValue to the diamonds subarray
+                skins[3][cardValue] = new Texture("images/cards/hearts/hearts_" + cardValue + ".jpg");                      // Add a hearts card with the current cardValue to the hearts subarray
+            }
+            
+            skins[4][0] = new Texture("images/cards/card_back.jpg");
+        }
+        
         this.suit = suit;
         this.value = value;
         
-        this.skin = this.skins[this.suit][this.value];
+        this.skinFront = skins[this.suit][this.value];
+        this.skinBack = skins[4][0];
+        this.currentSkin = skinFront;
         
-        this.width = this.skin.getWidth();
-        this.height = this.skin.getHeight();
+        this.width = this.currentSkin.getWidth();
+        this.height = this.currentSkin.getHeight();
         this.x = x;
         this.y = y;
         
@@ -78,7 +87,7 @@ public class Card {
     // METHODS
     
     public Texture getSkin() {
-        return this.skin;
+        return this.currentSkin;
     }
     
     // Draws the Card onto the screen so it is visible to the user
@@ -90,7 +99,7 @@ public class Card {
             batch.setColor((float) 1, (float) 1, (float) 1, 1);
         }
         
-        batch.draw(this.skin, this.x, this.y);
+        batch.draw(this.currentSkin, this.x, this.y);
         batch.setColor(1, 1, 1, 1);
     }
     
@@ -98,6 +107,26 @@ public class Card {
     // Plays the card
     public void play() {
         
+    }
+    
+    // Flips the Card from its current state (face up or face down)
+    public void flip() {
+        if (this.currentSkin == this.skinBack) {
+            this.currentSkin = this.skinFront;
+        }
+        else {
+            this.currentSkin = this.skinBack;
+        }
+    }
+    
+    // Returns the suit of the Card
+    public int getSuit() {
+        return this.suit;
+    }
+    
+    // Returns the value of the Card
+    public int getValue() {
+        return this.value;
     }
     
     // Sets the selected state of the card to the opposite of what it was at the time of the function call
