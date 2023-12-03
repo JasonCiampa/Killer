@@ -111,34 +111,28 @@ public class Card {
     
     // METHODS
     
-    // Returns the Card's currently active skin
-    public Texture getCurrentSkin() {
-        return this.currentSkin;
-    }
     
-    // Sets the Card's front skin
-    public void setFrontSkin(int cardSuit, int cardValue) {
-        this.skinFront = skins[cardSuit][cardValue];                                                                                // Sets the Card's frontSkin based on the passed in suit and value
-    }
-    
-    // Sets the Card's back skin
-    public void setBackSkin(int cardSuit, int cardValue) {
-        this.skinBack = skins[cardSuit][cardValue];                                                                                 // Sets the Card's backSkin based on the passed in suit and value
-    }
-    
-    
-    // Plays the card
-    public void play() {
+    // Plays the card onto the table at the given x and y coordinates with the given dimensions
+    public void play(float x, float y) {
         
     }
     
-    // Adjusts the Card's position by dx and dy over the duration of moveTimer
-    public void adjustPosition(float timer, float dx, float dy, float dw, float dh) {
+    // Moves the Card to newX, newY with dimensions newWidth newHeight over the duration of the timer
+    public void move(float timer, float newX, float newY, float newWidth, float newHeight) {
         this.timer = timer;
-        this.dw = dw;
-        this.dh = dh;
-        this.dx = dx;
-        this.dy = dy;
+        
+        if (this.timer == 0) {
+            this.x = newX;
+            this.y = newY;
+            this.width = newWidth;
+            this.height = newHeight;
+            return;
+        }
+        
+        this.dx = ((this.x - newX) / this.timer) * -1;
+        this.dy = ((this.y - newY) / this.timer) * -1;
+        this.dw = ((this.width - newWidth) / this.timer) * -1;
+        this.dh = ((this.height - newHeight) / this.timer) * -1;
     }
     
     // Flips the Card from its current state (face up or face down)
@@ -162,11 +156,11 @@ public class Card {
             if (this.mouseHovering && Mouse.checkClick()) {                                                                         // If the mouse is hovering over the Card AND the Mouse was clicked on the Card...
                 if (this.selected) {
                     this.selected = false;
-                    this.adjustPosition((float) 0.1, 0, -250, -80, -140);
+                    this.move((float) 0.1, this.x, this.y - 50, this.width, this.height);
                 }
                 else {
                     this.selected = true;
-                    this.adjustPosition((float) 0.1, 0, 250, 80, 140);
+                    this.move((float) 0.1, this.x, this.y + 50, this.width, this.height);
                 }
             }
         }
@@ -175,6 +169,16 @@ public class Card {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
    
     // GETTER AND SETTER METHODS //
+    
+    // Returns whether or not the Card is currently selected
+    public boolean getSelected() {
+        return this.selected;
+    }
+        
+    // Returns the Card's currently active skin
+    public Texture getCurrentSkin() {
+        return this.currentSkin;
+    }
     
     // Returns the suit of the Card
     public int getSuit() {
@@ -204,6 +208,16 @@ public class Card {
     // Returns the y-coordinate of the Card
     public float getY() {
         return this.y;
+    }
+        
+    // Sets the Card's front skin
+    public void setFrontSkin(int cardSuit, int cardValue) {
+        this.skinFront = skins[cardSuit][cardValue];                                                                                // Sets the Card's frontSkin based on the passed in suit and value
+    }
+    
+    // Sets the Card's back skin
+    public void setBackSkin(int cardSuit, int cardValue) {
+        this.skinBack = skins[cardSuit][cardValue];                                                                                 // Sets the Card's backSkin based on the passed in suit and value
     }
     
     // Sets the position of the Card

@@ -21,8 +21,12 @@ public class Deck {
     // CONSTRUCTOR //
     
     // Creates a Deck of 52 unique cards and shuffles them into a random order
-    public Deck() {
+    public Deck(boolean empty) {
         this.cards = new ArrayList<Card>();                                                                             // Initialize the cards ArrayList so it is prepared to store Cards
+        
+        if (empty) {
+            return;
+        }
         
         for (int suit = 0; suit < 4; suit++) {                                                                          // For each possible suit value...
             for (int cardValue = 0; cardValue < 13; cardValue++) {                                                      // For each possible cardValue...
@@ -36,6 +40,21 @@ public class Deck {
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
     // METHODS //
+    
+    // Adds a Card to the deck
+    public void addCard(Card card) {
+        this.cards.add(card);
+    }
+    
+    // Removes a Card from the deck
+    public void removeCard(int cardIndex) {
+        this.cards.remove(cardIndex);
+    }
+    
+    // Returns a Card from the deck
+    public Card getCard(int cardIndex) {
+        return this.cards.get(cardIndex);
+    }
     
     // Returns the size of the Deck
     public int getSize() {
@@ -80,8 +99,7 @@ public class Deck {
         Deck[] hands = new Deck[numHands];                                                                              // Initialize an empty array of Decks that will hold the hands being dealt to
         
         for (int hand = 0; hand < numHands; hand++) {                                                                   // For each hand in the number of hands being dealt to...
-            hands[hand] = new Deck();                                                                                       // Create a new Deck to store the hand
-            hands[hand].cards.clear();                                                                                      // Clear the Deck in preparation for new Card insertion
+            hands[hand] = new Deck(true);                                                                           // Create a new empty Deck to store the hand
         } 
         
         for (int card = 0; card < numCards; card++) {                                                                   // For each Card in the number of cards to be dealt to each hand...
@@ -95,13 +113,13 @@ public class Deck {
         return hands;                                                                                                   // Returns the Deck array containing each hand that was dealt Cards
     }
     
-    // Sets the draw position for each Card in the Deck
-    public void setCardPositions(int startX, int startY, int shiftDistanceX, int shiftDistanceY) {                      
-        int x = startX;                                                                                                 // Set x equal to the startX value that was passed in
-        int y = startY;                                                                                                 // Set y equal to the startY value that was passed in
+    // Aligns all of the Cards in the Deck
+    public void alignCards(float timer, float startX, float startY, float shiftDistanceX, float shiftDistanceY, float width, float height) {                      
+        float x = startX;                                                                                                 // Set x equal to the startX value that was passed in
+        float y = startY;                                                                                                 // Set y equal to the startY value that was passed in
         
-        for (Card card : this.cards) {                                                                                  // For every Card in the Deck...
-            card.setPosition(x, y);                                                                                         // Set the Card's position to x and y
+        for (Card card : this.cards) {                                                                                    // For every Card in the Deck...
+            card.move(timer, x, y, width, height);
             x += shiftDistanceX;                                                                                            // Increment x by the horizontal shift distance between this Card and the next
             y += shiftDistanceY;                                                                                            // Increment y by the vertical shift distance between this Card and the next
         }

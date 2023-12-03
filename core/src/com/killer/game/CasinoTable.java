@@ -28,9 +28,7 @@ public class CasinoTable extends Scene {
         playButton = new Button(Button.SHORT, 720, 20, "Play Cards", this) {                                                    // Creates a playButton
             @Override
             public void clickAction() {                                                                                                                         // Overriding the abstract clickAction method from the Button class
-                // Play cards code will go here
-                // OR
-                //This could trigger something in the GameHandler code (most likely option)
+                game.playCards();
             }
         };
         
