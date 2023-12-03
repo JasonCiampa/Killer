@@ -50,8 +50,8 @@ public class Card {
     private Texture skinBack;                                                                                                       // Stores the Card's back skin
     private Texture currentSkin;                                                                                                    // Stores the Card's currently active skin
             
-    private int width;                                                                                                              // Stores the Card's width
-    private int height;                                                                                                             // Stores the Card's height
+    private float width;                                                                                                              // Stores the Card's width
+    private float height;                                                                                                             // Stores the Card's height
     private float x;                                                                                                                  // Stores the Card's x-coordinate
     private float y;                                                                                                                  // Stores the Card's y-coordinate
     
@@ -59,11 +59,11 @@ public class Card {
     private boolean selected;                                                                                                       // Stores whether or not the Card has been clicked on for selection
     private boolean inMotion;                                                                                                       // Stores whether or not the Card is currently moving
     
-    private float moveTimer;                                                                                                        // Stores the amount of time that the Card can move for
+    private float timer;                                                                                                            // Keeps track of how much time has passed for the Card
     private float dx;                                                                                                               // Stores the movement speed of the Card along the x-axis
     private float dy;                                                                                                               // Stores the movement speed of the Card along the y-axis
-    private float destX;
-    private float destY;
+    private float dw;                                                                                                               // Stores the scaling speed of the Card along the x-axis
+    private float dh;                                                                                                               // Stores the scaling speed of the Card along the y-axis
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -99,9 +99,11 @@ public class Card {
         this.selected = false;                                                                                                      // Set the selected status to false by default
         this.inMotion = false;                                                                                                      // Set the inMotion status to false by default
         
-        this.moveTimer = 0;                                                                                                         // Set the amount of time that the Card can move for to 0 by default
+        this.timer = 0;                                                                                                             // Set the Card's timer to 0 by default
         this.dx = 200;                                                                                                              // Set the movement speed along the x-axis
         this.dy = 200;                                                                                                              // Set the movement speed along the y-axis
+        this.dw = 0;                                                                                                                // Set the scaling speed for the width of the Card
+        this.dh = 0;                                                                                                                // Set the scaling speed for the height of the Card
 
     }
     
@@ -130,9 +132,11 @@ public class Card {
         
     }
     
-    // Sets the amount of time for the Card to move and the amount it should move by on the x and y axis
-    public void move(float moveTimer, float dx, float dy) {
-        this.moveTimer = moveTimer;
+    // Adjusts the Card's position by dx and dy over the duration of moveTimer
+    public void adjustPosition(float timer, float dx, float dy, float dw, float dh) {
+        this.timer = timer;
+        this.dw = dw;
+        this.dh = dh;
         this.dx = dx;
         this.dy = dy;
     }
@@ -153,16 +157,16 @@ public class Card {
     // Sets the selected state of the card to the opposite of what it was at the time of the function call
     public void toggleSelected() {
         if (this.currentSkin == this.skinFront) {                                                                                   // If the Card's front skin is the currently active skin...
-            this.mouseHovering = Mouse.checkHover((int) this.x, (int) this.y, this.width, this.height);                                         // Determine whether or not the mouse is hovering over the Card
+            this.mouseHovering = Mouse.checkHover((int) this.x, (int) this.y, (int) this.width, (int) this.height);                                         // Determine whether or not the mouse is hovering over the Card
         
             if (this.mouseHovering && Mouse.checkClick()) {                                                                         // If the mouse is hovering over the Card AND the Mouse was clicked on the Card...
                 if (this.selected) {
                     this.selected = false;
-                    this.move((float) 0.1, 0, -250);
+                    this.adjustPosition((float) 0.1, 0, -250, -80, -140);
                 }
                 else {
                     this.selected = true;
-                    this.move((float) 0.1, 0, 250);
+                    this.adjustPosition((float) 0.1, 0, 250, 80, 140);
                 }
             }
         }
@@ -183,12 +187,12 @@ public class Card {
     }
     
     // Returns the width of the Card
-    public int getWidth() {
+    public float getWidth() {
         return this.width;
     }
     
     // Returns the height of the Card
-    public int getHeight() {
+    public float getHeight() {
         return this.height;
     }
     
@@ -216,16 +220,20 @@ public class Card {
     public void update() {
         float dt = Gdx.graphics.getDeltaTime();                                                                                     // Gets the amount of time since the last frame occurred
         
-        if (moveTimer > 0) {                                                                                                        // If the Card is currently in motion...
-            this.moveTimer = this.moveTimer - dt;                                                                                       // Adjust the moveTimer by the amount of time since the last frame occurred
-            this.x = (this.x + (this.dx * dt));                                                                                         // Adjust the Card's x-value by the amount the Card should move along the x-axis this frame
-            this.y = (this.y + (this.dy * dt));                                                                                         // Adjust the Card's y-value by the amount the Card should move along the y-axis this frame
-            return;                                                                                                                     // Return so that the Card's movement isn't interrupted
+        if (timer > 0) {                                                                                                        // If the Card is currently in motion...
+            this.timer = this.timer - dt;                                                                                       // Adjust the timer by the amount of time since the last frame occurred
+            this.width = (this.width + (this.dw * dt));                                                                             // Adjust the Card's width by the amount the Card should scale up this frame
+            this.height = (this.height + (this.dh * dt));                                                                           // Adjust the Card's height by the amount the Card should scale up this frame
+            this.x = (this.x + (this.dx * dt));                                                                                     // Adjust the Card's x-value by the amount the Card should move along the x-axis this frame
+            this.y = (this.y + (this.dy * dt));                                                                                     // Adjust the Card's y-value by the amount the Card should move along the y-axis this frame
+            return;                                                                                                                 // Return so that the Card's movement isn't interrupted
         } 
-        else if (moveTimer < 0) {
-            this.x = (this.x + (this.dx * this.moveTimer));
-            this.y = (this.y + (this.dy * this.moveTimer));
-            this.moveTimer = 0;
+        else if (timer < 0) {
+            this.width = (this.width + (this.dw * this.timer));
+            this.height = (this.height + (this.dh * this.timer));
+            this.x = (this.x + (this.dx * this.timer));
+            this.y = (this.y + (this.dy * this.timer));
+            this.timer = 0;
         }
         
         this.toggleSelected();                                                                                                      // Check to see if the Card has been selected
@@ -242,7 +250,7 @@ public class Card {
             }
         }
         
-        batch.draw(this.currentSkin, this.x, this.y, 80, 140);                                                                    // Draw the Card at it's x and y coordinates with it's current skin
+        batch.draw(this.currentSkin, this.x, this.y, this.width, this.height);                                                                    // Draw the Card at it's x and y coordinates with it's current skin
         batch.setColor(1, 1, 1, 1);                                                                                         // Set the color to be the normal shade of the Card
     }    
 }

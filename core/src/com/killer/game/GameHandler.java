@@ -71,5 +71,9 @@ public class GameHandler {
         for (Deck hand : hands) {                                                                                                                                                    // For each of the hands in the game...
             hand.draw(batch);                                                                                                                                                           // Draw all of the Cards in the hand
         }
+        
+        System.out.println(this.playerHand.getCards().get(0).getWidth());
+        System.out.println(this.playerHand.getCards().get(0).getHeight());
+
     }
 }
