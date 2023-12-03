@@ -3,7 +3,7 @@ package com.killer.game;
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 // IMPORTS //
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -45,20 +45,25 @@ public class Card {
     
     private int suit;                                                                                                               // Stores the suit of the card
     private int value;                                                                                                              // Stores the numerical/face value of the card
-    
-    private int moveSpeed = 50;                                                                                                     // Stores the movement speed of the Card
-    
+        
     private Texture skinFront;                                                                                                      // Stores the Card's front skin
     private Texture skinBack;                                                                                                       // Stores the Card's back skin
     private Texture currentSkin;                                                                                                    // Stores the Card's currently active skin
             
     private int width;                                                                                                              // Stores the Card's width
     private int height;                                                                                                             // Stores the Card's height
-    private int x;                                                                                                                  // Stores the Card's x-coordinate
-    private int y;                                                                                                                  // Stores the Card's y-coordinate
+    private float x;                                                                                                                  // Stores the Card's x-coordinate
+    private float y;                                                                                                                  // Stores the Card's y-coordinate
     
     private boolean mouseHovering;                                                                                                  // Stores whether or not the mouse is hovering over the Card
-    private boolean selected;       // If the card is clicked on and a part of the user's selected cards
+    private boolean selected;                                                                                                       // Stores whether or not the Card has been clicked on for selection
+    private boolean inMotion;                                                                                                       // Stores whether or not the Card is currently moving
+    
+    private float moveTimer;                                                                                                        // Stores the amount of time that the Card can move for
+    private float dx;                                                                                                               // Stores the movement speed of the Card along the x-axis
+    private float dy;                                                                                                               // Stores the movement speed of the Card along the y-axis
+    private float destX;
+    private float destY;
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -92,6 +97,12 @@ public class Card {
         
         this.mouseHovering = false;                                                                                                 // Set the mouseHovering status to false by default
         this.selected = false;                                                                                                      // Set the selected status to false by default
+        this.inMotion = false;                                                                                                      // Set the inMotion status to false by default
+        
+        this.moveTimer = 0;                                                                                                         // Set the amount of time that the Card can move for to 0 by default
+        this.dx = 200;                                                                                                              // Set the movement speed along the x-axis
+        this.dy = 200;                                                                                                              // Set the movement speed along the y-axis
+
     }
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -119,6 +130,13 @@ public class Card {
         
     }
     
+    // Sets the amount of time for the Card to move and the amount it should move by on the x and y axis
+    public void move(float moveTimer, float dx, float dy) {
+        this.moveTimer = moveTimer;
+        this.dx = dx;
+        this.dy = dy;
+    }
+    
     // Flips the Card from its current state (face up or face down)
     public void flip() {
         if (this.currentSkin == this.skinBack) {                                                                                    // If the Card's back skin is the currently active skin...
@@ -135,13 +153,19 @@ public class Card {
     // Sets the selected state of the card to the opposite of what it was at the time of the function call
     public void toggleSelected() {
         if (this.currentSkin == this.skinFront) {                                                                                   // If the Card's front skin is the currently active skin...
-            this.mouseHovering = Mouse.checkHover(this.x, this.y, this.width, this.height);                             // Determine whether or not the mouse is hovering over the Card
+            this.mouseHovering = Mouse.checkHover((int) this.x, (int) this.y, this.width, this.height);                                         // Determine whether or not the mouse is hovering over the Card
         
             if (this.mouseHovering && Mouse.checkClick()) {                                                                         // If the mouse is hovering over the Card AND the Mouse was clicked on the Card...
-                this.selected = !this.selected;                                                                                         // Switch the selected state to be the opposite of what it currently is
+                if (this.selected) {
+                    this.selected = false;
+                    this.move((float) 0.1, 0, -250);
+                }
+                else {
+                    this.selected = true;
+                    this.move((float) 0.1, 0, 250);
+                }
             }
         }
-
     }
     
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -169,12 +193,12 @@ public class Card {
     }
     
     // Returns the x-coordinate of the Card
-    public int getX() {
+    public float getX() {
         return this.x;
     }
     
     // Returns the y-coordinate of the Card
-    public int getY() {
+    public float getY() {
         return this.y;
     }
     
@@ -190,6 +214,20 @@ public class Card {
     
     // Updates the state of the Card
     public void update() {
+        float dt = Gdx.graphics.getDeltaTime();                                                                                     // Gets the amount of time since the last frame occurred
+        
+        if (moveTimer > 0) {                                                                                                        // If the Card is currently in motion...
+            this.moveTimer = this.moveTimer - dt;                                                                                       // Adjust the moveTimer by the amount of time since the last frame occurred
+            this.x = (this.x + (this.dx * dt));                                                                                         // Adjust the Card's x-value by the amount the Card should move along the x-axis this frame
+            this.y = (this.y + (this.dy * dt));                                                                                         // Adjust the Card's y-value by the amount the Card should move along the y-axis this frame
+            return;                                                                                                                     // Return so that the Card's movement isn't interrupted
+        } 
+        else if (moveTimer < 0) {
+            this.x = (this.x + (this.dx * this.moveTimer));
+            this.y = (this.y + (this.dy * this.moveTimer));
+            this.moveTimer = 0;
+        }
+        
         this.toggleSelected();                                                                                                      // Check to see if the Card has been selected
     }
     
@@ -202,12 +240,9 @@ public class Card {
             if (this.mouseHovering) {                                                                                                   // If the mouse is hovering over the Card...
                 batch.setColor((float) 0.7, (float) 0.7, (float) 0.7, 1);                                                               // Set the color to be a slightly darker shade than normal to indicate that the Card is being hovered over
             }
-            else {                                                                                                                      // Otherwise...
-                batch.setColor((float) 1, (float) 1, (float) 1, 1);                                                                     // Set the color to be the normal shade of the Card
-            }
         }
         
-        batch.draw(this.currentSkin, this.x, this.y);                                                                    // Draw the Card at it's x and y coordinates with it's current skin
+        batch.draw(this.currentSkin, this.x, this.y, 80, 140);                                                                    // Draw the Card at it's x and y coordinates with it's current skin
+        batch.setColor(1, 1, 1, 1);                                                                                         // Set the color to be the normal shade of the Card
     }    
-
 }

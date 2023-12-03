@@ -26,8 +26,9 @@ public class Mouse {
     
     // Updates the Mouse
     public static void update() {
+        float dt = Gdx.graphics.getDeltaTime();                                                     // Gets the amount of time since the last frame occurred
         if (clickCooldown > 0) {                                                                    // If the clickCooldown is still in effect...
-            clickCooldown = clickCooldown - Gdx.graphics.getDeltaTime();                                // Adjust the clickCooldown by the amount of time that has passed since the last frame
+            clickCooldown = clickCooldown - dt;                                                     // Adjust the clickCooldown by the amount of time that has passed since the last frame
         }
     }
     

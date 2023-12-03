@@ -120,7 +120,7 @@ public abstract class Button {
     protected void update() {
         this.setMouseHovering(Mouse.checkHover(this.getX(), this.getY(), this.getWidth(), this.getHeight()));                                   // Check if the mouse is hovering over the Button    
             
-        if (this.getMouseHovering() && Mouse.checkClick()) {                                                                                                              // If the button was clicked on...    
+        if (this.mouseHovering && Mouse.checkClick()) {                                                                                                              // If the button was clicked on...    
             this.performAction();                                                                                                                                           // Perform the Button's action
             return;                                                                                                                                                         // Return now since only one Button can be pressed at once
         } 

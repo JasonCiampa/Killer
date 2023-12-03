@@ -41,7 +41,7 @@ public class GameHandler {
                                                                                                                                                                                     
 
         this.leftHand.setCardPositions((((int) (Gdx.graphics.getWidth() / 3.5) - (((this.leftHand.getSize() - 1) * 20) + 75)) / 2), 450, 20, 5);    // Sets the position for each Card in leftHand
-        this.centerHand.setCardPositions(((Gdx.graphics.getWidth() - (((this.centerHand.getSize() - 1) * 34) + 75)) / 2), 622, 34, 0);              // Sets the position for each Card in centerHand
+        this.centerHand.setCardPositions(((Gdx.graphics.getWidth() - (((this.centerHand.getSize() - 1) * 25) + 35)) / 2), 660, 25, 0);              // Sets the position for each Card in centerHand
         this.rightHand.setCardPositions(1608 + (((this.rightHand.getSize() - 1) * 20) / 2), 450, -20, 5);                                           // Sets the position for each Card in rightHand
         this.playerHand.setCardPositions(((Gdx.graphics.getWidth() - (((this.playerHand.getSize() - 1) * 145) + 160)) / 2), 150, 145, 0);           // Sets the position for each Card in playerHand
     }
