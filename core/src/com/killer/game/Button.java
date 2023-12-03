@@ -42,8 +42,8 @@ public abstract class Button {
     // CONSTRUCTOR //
     public Button(int buttonType, int x, int y, String text, Scene buttonLocation) {
         this.skin = skins[buttonType];    
-        this.width = skin.getWidth();                                                                                                                                  // Sets the Button width (to the width of the skin)                        
-        this.height = skin.getHeight();                                                                                                                                // Sets the Button height (to the height of the skin)    
+        this.width = skin.getWidth();                                                                                                                                       // Sets the Button width (to the width of the skin)                        
+        this.height = skin.getHeight();                                                                                                                                     // Sets the Button height (to the height of the skin)    
         this.x = x;                                                                                                                                                         // Sets the x-coordinate of the Button
         this.y = y;                                                                                                                                                         // Sets the y-coordinate of the Button
         this.scaleX = scaleX;                                                                                                                                               // Sets the scale factor for the x-axis of the Button
@@ -72,6 +72,10 @@ public abstract class Button {
         this.clickSfx.play();                                                                                                                                               // Play the Button click sound effect
         this.clickAction();                                                                                                                                                 // Initiate the Button's click action
     }
+    
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    
+    // GETTER AND SETTER METHODS //
     
     // Returns the width of the Button
     protected int getWidth() {
@@ -109,15 +113,28 @@ public abstract class Button {
         this.y = y;
     }
     
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+    // STATE HANDLING FUNCTIONS //
+    
+    protected void update() {
+        this.setMouseHovering(Mouse.checkHover(this.getX(), this.getY(), this.getWidth(), this.getHeight()));                                   // Check if the mouse is hovering over the Button    
+            
+        if (this.getMouseHovering() && Mouse.checkClick()) {                                                                                                              // If the button was clicked on...    
+            this.performAction();                                                                                                                                           // Perform the Button's action
+            return;                                                                                                                                                         // Return now since only one Button can be pressed at once
+        } 
+    }
+    
     // Draws the Button on the Screen
     protected void draw(SpriteBatch batch) {
         if (this.mouseHovering) {                                                                                                                                        // If the Button is being hovered over by the mouse...
-            batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                              // Make the color dimmer and darker to indicate a hovering state
+            batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                                                     // Make the color dimmer and darker to indicate a hovering state
         }
         
-        batch.draw(skin, this.x, this.y, this.width, this.height);
-        font.draw(batch, text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));         // Writes the Button's text
-        batch.setColor(1, 1, 1, 1);                                                                                                                               // Sets the current drawing color to normal
+        batch.draw(skin, this.x, this.y, this.width, this.height);                                                                                // Draw the Button
+        font.draw(batch, text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));        // Writes the Button's text
+        batch.setColor(1, 1, 1, 1);                                                                                                                              // Sets the current drawing color to normal
     }
 }
 

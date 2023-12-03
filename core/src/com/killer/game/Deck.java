@@ -37,6 +37,16 @@ public class Deck {
 
     // METHODS //
     
+    // Returns the size of the Deck
+    public int getSize() {
+        return this.cards.size();
+    }
+    
+    // Returns a list of Cards in the Deck
+    public ArrayList<Card> getCards() {
+        return this.cards;
+    }
+    
     // Shuffles the Deck into a random assortment of Cards
     public void shuffle() {                                                             
         Collections.shuffle(this.cards);                                                                           // Shuffles the ArrayList of Cards
@@ -76,19 +86,38 @@ public class Deck {
         
         for (int card = 0; card < numCards; card++) {                                                                   // For each Card in the number of cards to be dealt to each hand...
             for (int hand = 0; hand < numHands; hand++) {                                                                   // For each Hand that needs to be dealt to...
-                int lastCard = this.cards.size() - 1;                                                                           // Determine the index of the last card in the Deck
-                hands[hand].cards.add(this.cards.get(lastCard));                                                        // Adds the Deck's last card into the hand
-                this.cards.remove(lastCard);                                                                                // Removes the Deck's last card now that it has been dealt to the hand
+                int lastCard = this.cards.size() - 1;                                                                           // Determine the index of the last Card in the Deck
+                hands[hand].cards.add(this.cards.get(lastCard));                                                        // Adds the Deck's last Card into the hand
+                this.cards.remove(lastCard);                                                                                // Removes the Deck's last Card now that it has been dealt to the hand
             } 
         }
         
         return hands;                                                                                                   // Returns the Deck array containing each hand that was dealt Cards
     }
     
+    // Sets the draw position for each Card in the Deck
+    public void setCardPositions(int startX, int startY, int shiftDistanceX, int shiftDistanceY) {                      
+        int x = startX;                                                                                                 // Set x equal to the startX value that was passed in
+        int y = startY;                                                                                                 // Set y equal to the startY value that was passed in
+        
+        for (Card card : this.cards) {                                                                                  // For every Card in the Deck...
+            card.setPosition(x, y);                                                                                         // Set the Card's position to x and y
+            x += shiftDistanceX;                                                                                            // Increment x by the horizontal shift distance between this Card and the next
+            y += shiftDistanceY;                                                                                            // Increment y by the vertical shift distance between this Card and the next
+        }
+    }
+       
+    // Updates each Card in the Deck
+    public void update() {
+        for (Card card : this.cards) {                                                                                  // For every Card in the Deck...
+            card.update();                                                                                                  // Update the Card
+        }
+    }
+    
     // Draws each Card in the Deck onto the screen
     public void draw(SpriteBatch batch) {
-        for (int card = 0; card < this.cards.size(); card++) {                                                          // For every Card in the Deck...
-            this.cards.get(card).draw(batch);                                                                         // Draw the Card onto the screen
+        for (Card card : this.cards) {                                                                                  // For every Card in the Deck...
+            card.draw(batch);                                                                                               // Draw the Card onto the screen
         }
     }
 }

@@ -2,7 +2,7 @@ package com.killer.game;
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-// Imports// 
+// IMPORTS // 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public abstract class Scene {
     
 
-    // Fields // 
+    // FIELDS // 
     protected static int totalScenes;                                                                                                                                 // Keeps track of how many scenes have been created.
     protected Texture backgroundImage;                                                                                                                                // Background image to be drawn for the scene
     protected Music backgroundMusic;                                                                                                                                  // Background music to be played while the scene is active
@@ -26,7 +26,7 @@ public abstract class Scene {
 
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
-    // Constructor //
+    // CONSTRUCTOR //
     protected Scene(String pathToBackgroundImage, String pathToBackgroundMusic, int x, int y) {
         totalScenes++;                                                                                                                                                // Increase total scene count by 1 since we're creating a new one
         this.backgroundImage = new Texture(Gdx.files.internal(pathToBackgroundImage));                                                                      // Sets background image
@@ -40,7 +40,7 @@ public abstract class Scene {
   
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-    // Methods //
+    // METHODS //
     
     // Plays the Scene's background music
     protected void playMusic() {
@@ -52,26 +52,6 @@ public abstract class Scene {
     // Stops the Scene's background music
     protected void stopMusic() {
         this.backgroundMusic.stop();
-    }
-    
-    // Creates a new Button object and adds it to the Scene's ArrayList of Buttons.
-    protected void updateButtons() {
-        for (Button button: this.buttons) {                                                                                                                            // For each Button in titleScreen...
-            
-            button.setMouseHovering(Mouse.checkHover(button.getX(), button.getY(), button.getWidth(), button.getHeight()));           // Check if the mouse is hovering over the Button    
-            
-            if (button.getMouseHovering() && Mouse.checkClick()) {                                                                                              // If the button was clicked on...    
-                button.performAction();                                                                                                                                   // Perform the Button's action
-                return;
-            }
-        }
-    }
-    
-    // Draws all of the Buttons stored in the Scene on the screen
-    protected void drawButtons(SpriteBatch batch) { 
-        for (int i = 0; i < this.buttons.size(); i++) {                                                                                                               // For every Button in the Scene...
-            this.buttons.get(i).draw(batch);                                                                                                                       // Draw the Button
-        }
     }
     
     // Enables the Scene
@@ -86,15 +66,29 @@ public abstract class Scene {
         this.stopMusic();                                                                                                                                             // Stop this Scene's music
     }
     
+    // Creates a new Button object and adds it to the Scene's ArrayList of Buttons.
+    protected void updateButtons() {
+        for (Button button: this.buttons) {                                                                                                                           // For each Button in titleScreen...
+            button.update();
+        }
+    }
+    
+    // Draws all of the Buttons stored in the Scene on the screen
+    protected void drawButtons(SpriteBatch batch) { 
+        for (int i = 0; i < this.buttons.size(); i++) {                                                                                                               // For every Button in the Scene...
+            this.buttons.get(i).draw(batch);                                                                                                                       // Draw the Button
+        }
+    }    
+
 
     // Initializes the state of the Scene
-    protected abstract void load();
+    protected abstract void load();                                                                                                                                   // This code will vary for each Scene, so a Scene-specific function should be written and take the place of this one
     
     // Updates the state of the Scene
-    protected abstract void update();
+    protected abstract void update();                                                                                                                                 // This code will vary for each Scene, so a Scene-specific function should be written and take the place of this one
     
     // Draws the state of the Scene
-    protected abstract void draw(SpriteBatch batch);
+    protected abstract void draw(SpriteBatch batch);                                                                                                                  // This code will vary for each Scene, so a Scene-specific function should be written and take the place of this one
     
 }
 
