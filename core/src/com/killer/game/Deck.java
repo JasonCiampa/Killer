@@ -14,7 +14,13 @@ public class Deck {
     
     // FIELDS //
     
-    private ArrayList<Card> cards;                                                                                       // Creates an ArrayList that will hold a full deck of 52 cards (all possible card suits and values)
+    private ArrayList<Card> cards;                                                                                      // Creates an ArrayList that will hold a full deck of 52 cards (all possible card suits and values)
+    private float x;                                                                                                    // Stores the x-coordinate for the Deck (where the first card will be drawn)
+    private float y;                                                                                                    // Stores the y-coordinate for the Deck (where the first card will be drawn)
+    private float shiftX;                                                                                               // Stores the x-axis shift value for the Deck (how far apart each card in the Deck will be drawn horizontally)                                                                             
+    private float shiftY;                                                                                               // Stores the y-axis shift value for the Deck (how far apart each card in the Deck will be drawn vertically)
+    private float cardWidth;                                                                                            // Stores the width of each Card in the Deck
+    private float cardHeight;                                                                                           // Stores the height of each Card in the Deck
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -41,6 +47,11 @@ public class Deck {
 
     // METHODS //
     
+    // Remove all Cards from the Deck at once
+    public void clearCards() {
+        this.cards.clear();
+    }
+    
     // Adds a Card to the deck
     public void addCard(Card card) {
         this.cards.add(card);
@@ -49,6 +60,36 @@ public class Deck {
     // Removes a Card from the deck
     public void removeCard(int cardIndex) {
         this.cards.remove(cardIndex);
+    }
+    
+    // Returns the x-coordinate of the Deck
+    public float getX() {
+        return this.x;
+    }
+    
+    // Returns the y-coordinate of the Deck
+    public float getY() {
+        return this.y;
+    }
+    
+    // Returns the x-axis shift value of the Deck
+    public float getShiftX() {
+        return this.shiftX;
+    }
+        
+    // Returns the y-axis shift value of the Deck
+    public float getShiftY() {
+        return this.shiftY;
+    }
+    
+    // Returns the width of each Card in the Deck
+    public float getCardWidth() {
+        return this.cardWidth;
+    }
+        
+    // Returns the Height of each Card in the Deck
+    public float getCardHeight() {
+        return this.cardHeight;
     }
     
     // Returns a Card from the deck
@@ -66,6 +107,41 @@ public class Deck {
         return this.cards;
     }
     
+    // Sets the Deck's x-coordinate
+    public void setX(float x) {
+        this.x = x;
+    }
+    
+    // Sets the Deck's y-coordinate
+    public void setY(float y) {
+        this.y = y;
+    }
+    
+    // Sets the x-axis shift value of the Deck
+    public void setShiftX(float shiftX) {
+        this.shiftX = shiftX;
+    }
+    
+    // Sets the y-axis shift value of the Deck
+    public void setShiftY(float shiftY) {
+        this.shiftY = shiftY;
+    }
+    
+    // Sets the alignment values for a Deck
+    public void setAlignment(float x, float y, float shiftX, float shiftY, float cardWidth, float cardHeight) {
+        this.setX(x);
+        this.setY(y);
+        this.setShiftX(shiftX);
+        this.setShiftY(shiftY);
+        this.cardWidth = cardWidth;
+        this.cardHeight = cardHeight;
+        
+        for (Card card : this.cards) {
+            card.setWidth(this.cardWidth);
+            card.setHeight(this.cardHeight);
+        }
+    }
+    
     // Shuffles the Deck into a random assortment of Cards
     public void shuffle() {                                                             
         Collections.shuffle(this.cards);                                                                           // Shuffles the ArrayList of Cards
@@ -73,22 +149,24 @@ public class Deck {
     
     // Organize the Deck from lowest Card first to highest Card last (based on number values)
     public void sort() {
-        int cardListSize = this.cards.size();                                                                           // Stores the number of cards in the Deck
+        int cardListSize = this.getSize();                                                                           // Stores the number of cards in the Deck
         ArrayList<Card> sortedCards = new ArrayList<Card>();                                                            // Creates an ArrayList that will temporarily store the Cards in a sorted order
         
         while (sortedCards.size() < cardListSize) {                                                                     // While the sortedCards list isn't complete...
-            Card smallestCard = this.cards.get(0);                                                                    // Store the smallest Card in the list as the first Card by default
+            Card smallestCard = this.getCard(0);                                                                    // Store the smallest Card in the list as the first Card by default
             int smallestCardIndex = 0;                                                                                      // Store the smallest Card in the list's index value as the first index by default
 
-            for (int card = 1; card < this.cards.size(); card++) {                                                      // For every Card in the Deck (except the first since we already have that Card set as smallestCard) ...
-                if (this.cards.get(card).getValue() < smallestCard.getValue()) {                                      // If the Card is smaller than smallestCard (has a lower numerical value)...
-                    smallestCard = this.cards.get(card);                                                                  // Set the smallestCard to be the current Card
-                    smallestCardIndex = card;                                                                                   // Set the smallestCardIndex to be the index of the current Card
-                }   
+            for (int card = 1; card < this.getSize(); card++) {                                                      // For every Card in the Deck (except the first since we already have that Card set as smallestCard) ...
+//                if (this.getCard(card).getSuit() < smallestCard.getSuit()) {
+                    if (this.getCard(card).getValue() < smallestCard.getValue()) {                                      // If the Card is smaller than smallestCard (has a lower numerical value)...
+                        smallestCard = this.getCard(card);                                                                  // Set the smallestCard to be the current Card
+                        smallestCardIndex = card;                                                                                   // Set the smallestCardIndex to be the index of the current Card
+                    }                  
+//                }
             }
             
             sortedCards.add(smallestCard);                                                                            // Add the smallestCard to the end of the sortedCards ArrayList
-            this.cards.remove(smallestCardIndex);                                                                 // Remove the smallestCard from the Deck so that it isn't duplicated
+            this.removeCard(smallestCardIndex);                                                                // Remove the smallestCard from the Deck so that it isn't duplicated
         }
         
         this.cards = sortedCards;                                                                                       // Set the Deck to hold the sortedCards
@@ -115,13 +193,13 @@ public class Deck {
     
     // Aligns all of the Cards in the Deck
     public void alignCards(float timer, float startX, float startY, float shiftDistanceX, float shiftDistanceY, float width, float height) {                      
-        float x = startX;                                                                                                 // Set x equal to the startX value that was passed in
-        float y = startY;                                                                                                 // Set y equal to the startY value that was passed in
+        float x = startX;                                                                                               // Set x equal to the startX value that was passed in
+        float y = startY;                                                                                               // Set y equal to the startY value that was passed in
         
-        for (Card card : this.cards) {                                                                                    // For every Card in the Deck...
+        for (Card card : this.cards) {                                                                                  // For every Card in the Deck...
             card.move(timer, x, y, width, height);
-            x += shiftDistanceX;                                                                                            // Increment x by the horizontal shift distance between this Card and the next
-            y += shiftDistanceY;                                                                                            // Increment y by the vertical shift distance between this Card and the next
+            x += shiftDistanceX;                                                                                        // Increment x by the horizontal shift distance between this Card and the next
+            y += shiftDistanceY;                                                                                        // Increment y by the vertical shift distance between this Card and the next
         }
     }
        

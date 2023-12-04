@@ -209,6 +209,11 @@ public class Card {
     public float getY() {
         return this.y;
     }
+    
+    // Sets the Card's selected value
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
         
     // Sets the Card's front skin
     public void setFrontSkin(int cardSuit, int cardValue) {
@@ -218,6 +223,22 @@ public class Card {
     // Sets the Card's back skin
     public void setBackSkin(int cardSuit, int cardValue) {
         this.skinBack = skins[cardSuit][cardValue];                                                                                 // Sets the Card's backSkin based on the passed in suit and value
+    }
+    
+    // Sets the Card's width
+    public void setWidth(float width) {
+        this.width = width;
+    }
+    
+    // Sets the Card's height
+    public void setHeight(float height) {
+        this.height = height;
+    }
+    
+    // Sets the Card's width and height at once
+    public void setDimensions(float width, float height) {
+        this.setWidth(width);
+        this.setHeight(height);
     }
     
     // Sets the position of the Card
@@ -249,8 +270,6 @@ public class Card {
             this.y = (this.y + (this.dy * this.timer));
             this.timer = 0;
         }
-        
-        this.toggleSelected();                                                                                                      // Check to see if the Card has been selected
     }
     
     // Draws the Card onto the screen in its current state so it is visible to the user
