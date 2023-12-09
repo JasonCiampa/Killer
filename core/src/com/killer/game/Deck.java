@@ -21,6 +21,7 @@ public class Deck {
     private float shiftY;                                                                                               // Stores the y-axis shift value for the Deck (how far apart each card in the Deck will be drawn vertically)
     private float cardWidth;                                                                                            // Stores the width of each Card in the Deck
     private float cardHeight;                                                                                           // Stores the height of each Card in the Deck
+    private boolean playable;                                                                                           // Stores whether or not the Deck's Cards are playable
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -92,6 +93,11 @@ public class Deck {
         return this.cardHeight;
     }
     
+    // Returns whether or not the Deck's Cards can be played
+    public boolean getPlayable() {
+        return this.playable;
+    }
+    
     // Returns a Card from the deck
     public Card getCard(int cardIndex) {
         return this.cards.get(cardIndex);
@@ -125,6 +131,11 @@ public class Deck {
     // Sets the y-axis shift value of the Deck
     public void setShiftY(float shiftY) {
         this.shiftY = shiftY;
+    }
+    
+    // Sets whether or not the Deck's Cards can be played
+    public void setPlayable(boolean playable) {
+        this.playable = playable;
     }
     
     // Sets the alignment values for a Deck
