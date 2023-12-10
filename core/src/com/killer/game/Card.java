@@ -56,7 +56,8 @@ public class Card {
     private float y;                                                                                                                  // Stores the Card's y-coordinate
     
     private boolean mouseHovering;                                                                                                  // Stores whether or not the mouse is hovering over the Card
-    private boolean selected;                                                                                                       // Stores whether or not the Card has been clicked on for selection
+    private boolean drawHighlighted;                                                                                                // Stores whether or not the Card should be drawn as highlighted
+    private boolean selected;                                                                                                       // Stores whether or not the Card has selected to play
     private boolean inMotion;                                                                                                       // Stores whether or not the Card is currently moving
     
     private float timer;                                                                                                            // Keeps track of how much time has passed for the Card
@@ -156,10 +157,12 @@ public class Card {
             if (this.mouseHovering && Mouse.checkClick()) {                                                                         // If the mouse is hovering over the Card AND the Mouse was clicked on the Card...
                 if (this.selected) {
                     this.selected = false;
+                    this.drawHighlighted = false;
                     this.move((float) 0.1, this.x, this.y - 50, this.width, this.height);
                 }
                 else {
                     this.selected = true;
+                    this.drawHighlighted = true;
                     this.move((float) 0.1, this.x, this.y + 50, this.width, this.height);
                 }
             }
@@ -173,6 +176,11 @@ public class Card {
     // Returns whether or not the Card is currently selected
     public boolean getSelected() {
         return this.selected;
+    }
+    
+    // Returns whether or not the Card is being drawn highlighted
+    public boolean getDrawHighlighted() {
+        return this.drawHighlighted;
     }
         
     // Returns the Card's currently active skin
@@ -213,6 +221,11 @@ public class Card {
     // Sets the Card's selected value
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+    
+    // Sets whether or not the Card is being drawn highlighted
+    public void setDrawHighlighted(boolean drawHighlighted) {
+        this.drawHighlighted = drawHighlighted;
     }
         
     // Sets the Card's front skin
@@ -274,7 +287,7 @@ public class Card {
     
     // Draws the Card onto the screen in its current state so it is visible to the user
     public void draw(SpriteBatch batch) {
-        if(this.selected) {                                                                                                         // If the Card is selected...
+        if(this.drawHighlighted) {                                                                                                  // If the Card is selected...
             batch.setColor((float) 1, (float) 0.51, (float) 0.59, 1);                                                               // Set the color to be reddish to indicate that the Card is selected
         }
         else {                                                                                                                      // Otherwise...

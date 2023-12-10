@@ -14,11 +14,10 @@ import java.util.Random;
 public class GameHandler {
     
     // FIELDS //
-    private Random RNG = new Random();
     private Deck fullDeck;                                                                                                                                                                          // A Deck that will hold all 52 possible Cards
     private ArrayList<Integer> cardsToPlay;                                                                                                                                                         // An ArrayList that will store the indices of Cards that have been selected to be played
     private Deck currentMove;                                                                                                                                                                       // A Deck that will store the current move (which cards have been played most recently onto the table)
-    private Deck previousMove;                                                                                                                                                                           // A Deck that will store the Cards that have been played this round but aren't a part of the most recent move
+    private Deck previousMove;                                                                                                                                                                      // A Deck that will store the Cards that have been played this round but aren't a part of the most recent move
     
     private Deck[] hands;                                                                                                                                                                           // An array of Decks that will hold each of the four hands
     private Deck leftHand;                                                                                                                                                                          // A Deck that will serve as the left bot's hand
@@ -26,22 +25,29 @@ public class GameHandler {
     private Deck rightHand;                                                                                                                                                                         // A Deck that will serve as the right bot's hand
     private Deck playerHand;                                                                                                                                                                        // A Deck that will serve as the player's hand
     
+    private Bot bot;                                                                                                                                                                                // A Bot that will play the three non-player hands
+
     private boolean playerInputAllowed;
     
-    private static final int UNDEFINED = -1;
-    private static final int SINGLES = 1;                                                                                                                                                           // A constant int used to indicate a Singles round
-    private static final int DOUBLES = 2;                                                                                                                                                           // A constant int used to indicate a Doubles round
-    private static final int TRIPLES = 3;                                                                                                                                                           // A constant int used to indicate a Triples round
-    private static final int CONSECUTIVES = 4;                                                                                                                                                      // A constant int used to indicate a Consecutives round
+    public static final int UNDEFINED = -1;
+    public static final int SINGLES = 1;                                                                                                                                                           // A constant int used to indicate a Singles round
+    public static final int DOUBLES = 2;                                                                                                                                                           // A constant int used to indicate a Doubles round
+    public static final int TRIPLES = 3;                                                                                                                                                           // A constant int used to indicate a Triples round
+    public static final int CONSECUTIVES = 4;                                                                                                                                                      // A constant int used to indicate a Consecutives round
+    
     private int roundType;                                                                                                                                                                          // An int used to keep track of the current round type
     private boolean roundEnding;                                                                                                                                                                    // A boolean used to keep track of whether ot not the round is in the process of ending
-    private Texture roundOver = new Texture(Gdx.files.internal("images/user_interface/round_over.png"));                                                                                  // An image of the "round over" text
+    private final Texture roundOver = new Texture(Gdx.files.internal("images/user_interface/round_over.png"));                                                                                  // An image of the "round over" text
     
     private int turnToPlay;                                                                                                                                                                         // Keeps track of which hand is currently up to play Cards
-    private Texture turnArrow = new Texture(Gdx.files.internal("images/user_interface/arrow/arrow_down.png"));                                                                                                                                                                      // An arrow that is drawn on the screen to indicate whose turn it is
-    private Texture passed = new Texture (Gdx.files.internal("images/user_interface/passed.png"));
+    private final Texture turnArrow = new Texture(Gdx.files.internal("images/user_interface/arrow/arrow_down.png"));                                                                                                                                                                      // An arrow that is drawn on the screen to indicate whose turn it is
+    private final Texture passed = new Texture (Gdx.files.internal("images/user_interface/passed.png"));
     private boolean botPlayingTurn;                                                                                                                                                                 // Keeps track of whether or not the bot is currently playing their turn
     private float timer = 0;
+    
+    private boolean gameOver = false;                                                                                                                                                               // Keeps track of whether or not the game has ended
+    private Texture gameOutcome;                                                                                                                                                                    // An image that will display "You Win!" or "You Lose!" at the end of a game
+
     
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -53,24 +59,27 @@ public class GameHandler {
         this.previousMove = new Deck(true);                                                                                                                                                        // Creates a new empty Deck that will store the Cards that have been played this round but are no longer part of the most recent move
         
         this.hands = this.fullDeck.deal(13, 4);                                                                                                                                     // Creates 4 hands with 13 cards each (all cards come from fullDeck, which is now empty)
-        
         this.leftHand = this.hands[0];                                                                                                                                                              // Set the left hand equal to the first hand created
         this.centerHand = this.hands[1];                                                                                                                                                            // Set the center hand equal to the second hand created
         this.rightHand = this.hands[2];                                                                                                                                                             // Set the right hand equal to the third hand created
         this.playerHand = this.hands[3];                                                                                                                                                            // Set the Player's hand equal to the fourth hand created
         
-        this.setHand(this.leftHand, Card.LEFT);                                                                                                                                    // Sets up the left hand
-        this.setHand(this.centerHand, Card.CENTER);                                                                                                                                // Sets up the center hand
-        this.setHand(this.rightHand, Card.RIGHT);                                                                                                                                  // Sets up the right hand
+        this.setHand(this.leftHand, Card.LEFT);                                                                                                                                    // Sets up the left hand so that the backs of the Cards are displayed and angled leftward
+        this.setHand(this.centerHand, Card.CENTER);                                                                                                                                // Sets up the center hand so that the backs of the Cards are displayed
+        this.setHand(this.rightHand, Card.RIGHT);                                                                                                                                  // Sets up the right hand so that the backs of the Cards are displayed and angled rightward
         
         this.setHandAlignments();                                                                                                                                                                   // Sets the position for every Card in each hand
         
         for (Deck hand : this.hands) {                                                                                                                                                              // For each hand created...
             hand.sort();                                                                                                                                                                                // Sort the hand from lowest Card value to highest
             hand.alignCards(0, hand.getX(), hand.getY(), hand.getShiftX(), hand.getShiftY(), hand.getCardWidth(), hand.getCardHeight());        // Align all of the Cards in this hand neatly next to each other
-        }                     
-
+        }         
+        
         this.determineFirstTurn();                                                                                                                                                                  // Determine which hand should play their Cards first
+        
+        this.bot = new Bot(this, this.hands[this.turnToPlay]);
+        this.bot.setHand(this.hands[this.turnToPlay]);
+        
         this.startNewRound();                                                                                                                                                                       // Start the first round
     }
     
@@ -102,6 +111,10 @@ public class GameHandler {
         if (this.turnToPlay > 3) {                                                                                                                                                                  // If the new index refers to a non-existent hand...
             this.turnToPlay = 0;                                                                                                                                                                        // Set the index to 0 so that the first hand in the list is up again
         }
+        
+        if (this.turnToPlay != 3) {
+            this.bot.setHand(this.hands[this.turnToPlay]);
+        }
     }
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -109,22 +122,24 @@ public class GameHandler {
     // CARD MOVE VALIDATION METHODS //
     
     // Returns whether or not the given Card is a valid single
-    private boolean validateSingles(Card card) {
-        if (card.getValue() < this.currentMove.getCard(0).getValue()) {                                                                                                                    // If the Card that was passed in doesn't have the same value or a greater on than the Card on the table currently...
-            return false;                                                                                                                                                                               // Return false because this isn't a proper singles move
-        }
-        
-        if (card.getValue() > Card.VALUE_10 && (card.getValue() == this.currentMove.getCard(0).getValue()) ) {                                                                             // If the Card has a value that is greater than 10 and is equal to the current move Card...
-            if (card.getSuit() < this.currentMove.getCard(0).getSuit()) {                                                                                                                      // If the Card's suit is lower than the Card on the table currently...
-                return false;                                                                                                                                                                           // Return false because face cards and higher consider suits, and the Card's suit was not high enough
+    public boolean validateSingles(Card card) {
+        if (this.roundType != UNDEFINED) {
+            if (card.getValue() < this.currentMove.getCard(0).getValue()) {                                                                                                                    // If the Card that was passed in doesn't have the same value or a greater on than the Card on the table currently...
+                return false;                                                                                                                                                                               // Return false because this isn't a proper singles move
             }
-        } 
+        
+            if (card.getValue() > Card.VALUE_10 && (card.getValue() == this.currentMove.getCard(0).getValue()) ) {                                                                             // If the Card has a value that is greater than 10 and is equal to the current move Card...
+                if (card.getSuit() < this.currentMove.getCard(0).getSuit()) {                                                                                                                      // If the Card's suit is lower than the Card on the table currently...
+                    return false;                                                                                                                                                                           // Return false because face cards and higher consider suits, and the Card's suit was not high enough
+                }
+            } 
+        }
         
         return true;                                                                                                                                                                                // Return true because this is a proper singles move
     }
     
         // Returns whether or not the given Cards are valid doubles
-    private boolean validateDoubles(Deck cards) {
+    public boolean validateDoubles(Deck cards) {
         Card firstCard = cards.getCard(0);                                                                                                                                                // Stores a reference to the first Card in the Deck that was passed in
         Card secondCard = cards.getCard(1);                                                                                                                                               // Stores a reference to the second Card in the Deck that was passed in
 
@@ -148,7 +163,7 @@ public class GameHandler {
     }
     
     // Returns whether or not the given Cards are valid triples
-    private boolean validateTriples(Deck cards) {
+    public boolean validateTriples(Deck cards) {
         Card firstCard = cards.getCard(0);                                                                                                                                              // Stores a reference to the first Card in the Deck that was passed in
         Card secondCard = cards.getCard(1);                                                                                                                                             // Stores a reference to the second Card in the Deck that was passed in
         Card thirdCard = cards.getCard(2);                                                                                                                                              // Stores a reference to the third Card in the Deck that was passed in
@@ -157,7 +172,7 @@ public class GameHandler {
             return false;                                                                                                                                                                            // Return false because this isn't a proper triples move
         }
         
-        if (this.roundType != -1) {                                                                                                                                                              // If this isn't the first move of the round (meaning that the round type has already been established)...
+        if (this.roundType != UNDEFINED) {                                                                                                                                                              // If this isn't the first move of the round (meaning that the round type has already been established)...
             if (firstCard.getValue() < this.currentMove.getCard(0).getValue()) {                                                                                                            // If the first Card in this Deck has a value that isn't the same as or greater than the first Card in the currentMove on the table...
                 return false;                                                                                                                                                                            // Return false because the first card must have the same value or a greater one than the first Card on the table
             }
@@ -167,7 +182,7 @@ public class GameHandler {
     }
     
     // Returns whether or not the given Cards are valid consecutives
-    private boolean validateConsecutives(Deck cards) {        
+    public boolean validateConsecutives(Deck cards) {        
         for (int cardIndex = 1; cardIndex < cards.getSize(); cardIndex++) {                                                                                                                     // For every Card in the Deck that was passed in except the first Card...
             Card previousCard = (cards.getCard(cardIndex - 1));                                                                                                                                         // Store a reference to the Card that comes before the current Card
             Card currentCard = (cards.getCard(cardIndex));                                                                                                                                              // Store a reference to the current Card
@@ -177,13 +192,20 @@ public class GameHandler {
             }
         }
         
-        if (this.roundType != -1) {                                                                                                                                                                 // If this isn't the first move of the round (meaning that the round type has already been established)...
+        if (this.roundType != UNDEFINED) {                                                                                                                                                                 // If this isn't the first move of the round (meaning that the round type has already been established)...
             if ((cards.getSize() != this.currentMove.getSize())) {                                                                                                                                      // If the number of Cards selected for this consecutive play doesn't match the number of Cards on the table...
                 return false;                                                                                                                                                                               // Return false because each play in a consecutives round must have the same number of Cards
             }
             
             if ((cards.getCard(0).getValue() < this.currentMove.getCard(0).getValue())) {                                                                                           // If the first Card in this Deck has a value that is less than the first Card in the currentMove on the table...
                 return false;                                                                                                                                                                             // Return false because the first card must have the same value or a greater one than the first Card on the table     
+            }
+            
+            Card lastCard = cards.getCard(cards.getSize() - 1);
+            if (lastCard.getValue() > Card.VALUE_10 && (lastCard.getValue() == this.currentMove.getCard(this.currentMove.getSize() - 1).getValue())) {                                                              // If the Card has a value that is greater than 10 and is equal to the current move Card...
+                if (lastCard.getSuit() < this.currentMove.getCard(this.currentMove.getSize() - 1).getSuit()) {                                                                                                           // If the first Card's suit is lower than the first Card's suit in the current move...
+                    return false;                                                                                                                                                                         // Return false because the first Card doesn't have a high enough suit, and suits are considered with face cards and higher
+                }
             }
         }
         
@@ -194,6 +216,11 @@ public class GameHandler {
     
     // ROUND HANDLING METHODS //
     
+    // Returns the current round type
+    public int getRoundType() {
+        return this.roundType;
+    }
+    
     // Starts a new round
     private void startNewRound() {
         for (Deck hand : this.hands) {                                                                                                                                                              // For every hand in the game...
@@ -202,7 +229,7 @@ public class GameHandler {
         
         this.previousMove.clearCards();
         this.currentMove.clearCards();                                                                                                                                                              // Clear the table for the start of the new round
-        this.roundType = -1;                                                                                                                                                                        // Set the round type to -1 (this will be changed when the first cards are played down)
+        this.roundType = UNDEFINED;                                                                                                                                                                     // Set the round type to undefined (this will be changed when the first cards are played down)
     }
     
     // Checks how far the round has progressed
@@ -223,6 +250,20 @@ public class GameHandler {
         }
     }
     
+    private void checkGameProgress() {
+        for (Deck hand : this.hands) {
+            if (hand.getSize() == 0) {
+                this.gameOver = true;
+                this.timer = 2;
+                if (hand == this.hands[3]) {
+                    this.gameOutcome = new Texture(Gdx.files.internal("images/user_interface/you_win.png"));
+                }
+                else {
+                    this.gameOutcome = new Texture(Gdx.files.internal("images/user_interface/you_lose.png"));
+                }
+            }
+        }
+    }
     
     // Determines what the type of round is based on the first move played at the start of the round (singles, doubles, triples, consecutives, or -1 if the first move is invalid)
     private int determineRoundType(Deck startingCards) {
@@ -314,8 +355,9 @@ public class GameHandler {
             Card card = this.hands[turnToPlay].getCard(cardIndex);                                                                                                                                          // Create a variable to store the Card so it doesn't need to be fetched more than once                                                                                                                             
             
             if (card.getSelected()) {                                                                                                                                                                       // If the Card is selected...
-                card.setSelected(false);                                                                                                                                                                // Unselect the Card now that it is being played
+                card.setDrawHighlighted(false);                                                                                                                                                   // Ensure that the Card is not drawn as highlighted
                 this.cardsToPlay.add(cardIndex);                                                                                                                                                              // Add the Card's index into the cardsToPlay Deck
+                card.setSelected(false);                                                                                                                                                                // Unselect the Card now that it is being played
             }
         }    
         
@@ -370,175 +412,6 @@ public class GameHandler {
         this.hands[this.turnToPlay].setPlayable(false);                                                                                                                                     // Sets the hand's playable status to false so that Cards can't be played
         this.setNextTurn();
     }
-    
-    // Checks if the bot is able to play a single card and prepares to play it if possible (returns true if card is being prepped for play, false if not)
-    private boolean botPlaySingles() {
-        Deck botHand = this.hands[this.turnToPlay];                                                                                                                                                 // Stores the current bot's hand in a variable (nice for readability)
-        
-        for (int i = 0; i < botHand.getSize(); i++) {                                                                                                                                               // For every Card in the bot's hand...
-            if (validateSingles(botHand.getCard(i))) {                                                                                                                                    // If the Card is a valid single play...
-                botHand.getCard(i).setSelected(true);                                                                                                                                      // Set the Card to be selected to play
-                return true;                                                                                                                                                                                     // Return true because the bot's move has been selected
-            }
-        } 
-        
-        return false;                                                                                                                                                                               // Return false because the bot was unable to play a single card 
-    }
-    
-    // Checks if the bot is able to play doubles and prepares to play the Cards if possible (returns true if cards are being prepped for play, false if not)
-    private boolean botPlayDoubles() {
-        Deck botHand = this.hands[this.turnToPlay];                                                                                                                                                 // Stores the current bot's hand in a variable (nice for readability)
-        Deck cardsToCheck = new Deck(true);                                                                                                                                                   // Create a Deck that will store two Cards to consider as a doubles play
-            
-        for (int i = 1; i < botHand.getSize() - 1; i++) {                                                                                                                                           // For every Card in the hand (excluding the first card)...
-            cardsToCheck.addCard(botHand.getCard(i - 1));                                                                                                                                          // Add the previous Card into the cardsToCheck Deck
-            cardsToCheck.addCard(botHand.getCard(i));                                                                                                                                     // Add the current Card into the cardsToCheck Deck
-
-            if (validateDoubles(cardsToCheck)) {                                                                                                                                                // If the pair of Cards is a valid doubles play...
-                botHand.getCard(i - 1).setSelected(true);                                                                                                                                         // Set the previous Card to be selected
-                botHand.getCard(i).setSelected(true);                                                                                                                                    // Set the current Card to be selected
-                return true;                                                                                                                                                                              // Return true because the bot's move has been selected
-            }
-            else {                                                                                                                                                                                    // Otherwise...
-                cardsToCheck.clearCards();                                                                                                                                                                // Clear out the cardsToCheck Deck since these Cards weren't a valid doubles play
-            }
-        }
-        
-        return false;                                                                                                                                                                               // Return false because the bot was unable to play doubles                                                                                                                                                                  
-    }
-    
-    // Checks if the bot is able to play triples and prepares to play the Cards if possible (returns true if cards are being prepped for play, false if not)
-    private boolean botPlayTriples() {
-        Deck botHand = this.hands[this.turnToPlay];                                                                                                                                                 // Stores the current bot's hand in a variable (nice for readability)
-        Deck cardsToCheck = new Deck(true);                                                                                                                                                   // Create a Deck that will store three Cards to consider as a doubles play
-
-        for (int i = 2; i < botHand.getSize() - 2; i++) {                                                                                                                                           // For every Card in the hand (excluding the first two cards)...
-            cardsToCheck.addCard(botHand.getCard(i - 2));                                                                                                                                          // Add the previous previous Card into the cardsToCheck Deck
-            cardsToCheck.addCard(botHand.getCard(i - 1));                                                                                                                                          // Add the previous Card into the cardsToCheck Deck
-            cardsToCheck.addCard(botHand.getCard(i));                                                                                                                                     // Add the current Card into the cardsToCheck Deck
-
-            if (validateTriples(cardsToCheck)) {                                                                                                                                                  // If the pair of Cards is a valid doubles play...
-                botHand.getCard(i - 2).setSelected(true);                                                                                                                                           // Set the previous previous Card to be selected
-                botHand.getCard(i - 1).setSelected(true);                                                                                                                                           // Set the previous Card to be selected
-                botHand.getCard(i).setSelected(true);                                                                                                                                      // Set the current Card to be selected
-                return true;                                                                                                                                                                                // Return because the bot's move has been selected
-            }
-            else {                                                                                                                                                                                      // Otherwise...
-                cardsToCheck.clearCards();                                                                                                                                                                  // Clear out the cardsToCheck Deck since these Cards weren't a valid triples play
-            }
-        }   
-        
-        return false;                                                                                                                                                                               // Return false because the bot was unable to play triples  
-    }
-    
-    private boolean botPlayConsecutives() {
-        Deck botHand = this.hands[this.turnToPlay];                                                                                                                                                 // Stores the current bot's hand in a variable (nice for readability)
-        Deck cardsToCheck = new Deck(true);                                                                                                                                                   // Create a Deck that will store at least three Cards to consider as a consecutives play
-        int numCardsNeeded = this.currentMove.getSize();                                                                                                                                            // Store the number of Cards needed to produce a valid consecutive play
-
-        for (int i = numCardsNeeded - 1; i < botHand.getSize() - (numCardsNeeded - 1); i++) {                                                                                                       // For every potential consecutive grouping in the hand...
-            for (int j = (i - (numCardsNeeded - 1)); j < (i + 1); j++) {                                                                                                                                // For each Card in the potential consecutive grouping...
-                cardsToCheck.addCard(botHand.getCard(j));                                                                                                                                   // Add the Card into the cardsToCheck Deck
-            }
-
-            if (validateConsecutives(cardsToCheck)) {                                                                                                                                             // If the group of Cards is a valid consecutives play...
-                for (int j = (i - (numCardsNeeded - 1)); j < (i + 1); j++) {                                                                                                                                // For each Card in the consecutive grouping...
-                    botHand.getCard(j).setSelected(true);                                                                                                                                   // Set the Card to be selected for play
-                }
-                return true;                                                                                                                                                                                     // Return true because the bot's move has been selected
-            }
-            else {                                                                                                                                                                                      // Otherwise...
-                cardsToCheck.clearCards();                                                                                                                                                                  // Clear out the cardsToCheck Deck since these Cards weren't a valid consecutives play
-            }
-        }
-        
-        return false;                                                                                                                                                                               // Return false because the bot was unable to play consecutives
-    }
-    
-    
-    
-    // Considers the Cards in the deck and makes the Bot select a move to play
-    private void botDetermineMove() {
-        ArrayList<Deck> moveOptions = new ArrayList<Deck>();                                                                                                                                        // Creates an ArrayList that will store move options for the bot (sub-Decks that represent playable moves from the overall hand)
-        Deck botHand = this.hands[this.turnToPlay];                                                                                                                                                 // Stores the current bot's hand in a variable (nice for readability)
-        
-        if (this.roundType == SINGLES) {                                                                                                                                                            // If this is a singles round...
-            if (this.botPlaySingles()) {                                                                                                                                                                // If the bot has a valid Card selected for the singles round...
-            }
-        }
-        
-        else if (this.roundType == DOUBLES) {                                                                                                                                                       // If this is a doubles round...
-            if (this.botPlayDoubles()) {                                                                                                                                                                // If the bot has valid Cards selected for the doubles round...
-            }
-        }
-        
-        else if (this.roundType == TRIPLES) {                                                                                                                                                       // If this is a triples round...
-            if (this.botPlayTriples()) {                                                                                                                                                                // If the bot has valid Cards selected for the triples round...
-            }
-        }
-        
-        else if (this.roundType == CONSECUTIVES) {                                                                                                                                                  // If this is a consecutives round...
-            if (this.botPlayConsecutives()) {                                                                                                                                                           // If the bot has valid Cards selected for the consecutives round...
-            }
-        }
-        else if (this.roundType == UNDEFINED) {
-            // Values 0 to botHand.size() will be for each single card
-            for (int i = 0; i < botHand.getSize(); i++) {
-                Deck potentialMove = new Deck(true);
-                potentialMove.addCard(botHand.getCard(0));
-                moveOptions.add(potentialMove);
-            }
-            
-            // All doubles combos come after that
-            Deck cardsToCheck = new Deck(true);                                                                                                                                                   // Create a Deck that will store two Cards to consider as a doubles play
-            
-            for (int i = 1; i < botHand.getSize() - 1; i++) {                                                                                                                                           // For every Card in the hand (excluding the first card)...
-                cardsToCheck.addCard(botHand.getCard(i - 1));                                                                                                                                          // Add the previous Card into the cardsToCheck Deck
-                cardsToCheck.addCard(botHand.getCard(i));                                                                                                                                     // Add the current Card into the cardsToCheck Deck
-
-                if (validateDoubles(cardsToCheck)) {                                                                                                                                                // If the pair of Cards is a valid doubles play...
-                    Deck potentialMove = new Deck(true);
-                    potentialMove.addCard(cardsToCheck.getCard(0));
-                    potentialMove.addCard(cardsToCheck.getCard(1));
-                    moveOptions.add(potentialMove);
-                }
-                
-                cardsToCheck.clearCards();                                                                                                                                                                // Clear out the cardsToCheck Deck since these Cards weren't a valid doubles play
-            }
-            
-            // All triples combos come after that
-            for (int i = 2; i < botHand.getSize() - 2; i++) {                                                                                                                                           // For every Card in the hand (excluding the first two cards)...
-                cardsToCheck.addCard(botHand.getCard(i - 2));                                                                                                                                          // Add the previous previous Card into the cardsToCheck Deck
-                cardsToCheck.addCard(botHand.getCard(i - 1));                                                                                                                                          // Add the previous Card into the cardsToCheck Deck
-                cardsToCheck.addCard(botHand.getCard(i));                                                                                                                                     // Add the current Card into the cardsToCheck Deck
-
-                if (validateTriples(cardsToCheck)) {                                                                                                                                                  // If the pair of Cards is a valid doubles play...
-                    Deck potentialMove = new Deck(true);
-                    potentialMove.addCard(cardsToCheck.getCard(0));
-                    potentialMove.addCard(cardsToCheck.getCard(1));
-                    potentialMove.addCard(cardsToCheck.getCard(2));
-                    moveOptions.add(potentialMove);
-                }
-                
-                cardsToCheck.clearCards();                                                                                                                                                                  // Clear out the cardsToCheck Deck since these Cards weren't a valid triples play
-            }  
-            
-            if (moveOptions.size() > 0) {
-                Deck moveToPlay = moveOptions.get(RNG.nextInt(moveOptions.size()));
-            
-                for (Card card : moveToPlay.getCards()) {
-                    card.setSelected(true);
-                }   
-            }
-
-            // All consecutive combos come after that
-
-        }
-        
-        // If the player has at least 10 of their cards or more...
-        // If the player has at least 6 of their cards...
-        // If the player has at least 4 of their cards...
-    }
         
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -547,9 +420,23 @@ public class GameHandler {
     
     // Updates every Card in every hand in the game
     public void update() {
+        if (this.gameOver) {
+            this.timer -= Gdx.graphics.getDeltaTime();
+            
+            if (this.timer < 0) {
+                this.timer = 0;
+            }
+            else if (this.timer == 0) {
+                return;
+            }
+        }
+        
+        this.checkGameProgress();
+        
         if (this.roundEnding) {
             if (this.timer > 0) {                                                                                                                                                                       // If the timer is still counting down to 0...
                 this.timer -= Gdx.graphics.getDeltaTime();                                                                                                                                                  // Reduce the timer by the amount of time that has passed since the last update
+                return;
             } 
             else {                                                                                                                                                                                      // Otherwise...
                 this.timer = 0;                                                                                                                                                                             // Set the timer back to 0
@@ -564,24 +451,23 @@ public class GameHandler {
         if (this.turnToPlay != 3) {                                                                                                                                                                 // If the current turn is not the Player's turn...
             this.playerInputAllowed = false;                                                                                                                                                            // Disable the player's ability to play cards or pass their turn since it isn't their turn
             
-            if(!this.botPlayingTurn) {                                                                                                                                                                  // If a bot isn't already in the process of playing their turn...
-                this.botDetermineMove();                                                                                                                                                                    // Start the bot's turn
+            if(!this.bot.getPlayingTurn()) {                                                                                                                                                                  // If the bot isn't already in the process of playing a turn...
                 this.timer = 2;                                                                                                                                                                             // Start a 2 second timer
-                this.botPlayingTurn = true;                                                                                                                                                                 // Set the botPlayingTurn value to true since the bot has commenced their turn
+                this.bot.setPlayingTurn(true);                                                                                                                                                                 // Set the botPlayingTurn value to true since the bot has commenced their turn
             }
         }
         else {                                                                                                                                                                                      // Otherwise...
             this.playerInputAllowed = true;                                                                                                                                                            // Enable the player's ability to play cards or pass their turn since it is their turn
         }
         
-        if (this.botPlayingTurn) {                                                                                                                                                                  // If the bot is currently playing their turn...
+        if (this.bot.getPlayingTurn()) {                                                                                                                                                                  // If the bot is currently playing their turn...
             if (this.timer > 0) {                                                                                                                                                                       // If the timer is still counting down to 0...
                 this.timer -= Gdx.graphics.getDeltaTime();                                                                                                                                                  // Reduce the timer by the amount of time that has passed since the last update
             }
             else {                                                                                                                                                                                      // Otherwise...
                 this.timer = 0;                                                                                                                                                                             // Set the timer back to 0
-                this.botPlayingTurn = false;                                                                                                                                                                // Set the botPlayingTurn value to false now that the bot has finished their turn
-                this.playCards();                                                                                                                                                                           // Play the bot's move
+                this.bot.playTurn();
+                this.bot.setPlayingTurn(false);                                                                                                                                                                // Set the botPlayingTurn value to false now that the bot has finished their turn
             }
         }
         
@@ -600,7 +486,7 @@ public class GameHandler {
     }
     
     // Draws every Card from every hand in the game
-    public void draw(SpriteBatch batch) {  
+    public void draw(SpriteBatch batch) {          
         for (Card card : this.previousMove.getCards()) {
             batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);
             card.draw(batch);
@@ -633,8 +519,12 @@ public class GameHandler {
         
         if (this.roundEnding) {
             batch.draw(this.roundOver, (float) 672.5, 600);
+            return;
         }
         
+        if (this.gameOver) {
+            batch.draw(this.gameOutcome, (float) 672.5, 600);
+        }
     }
     
 }

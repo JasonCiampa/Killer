@@ -44,6 +44,15 @@ public class Deck {
         this.shuffle();                                                                                                 // Shuffle the deck
     }
     
+    // Creates a Deck with the given Cards in their given order
+    public Deck(Card[] cards) {
+        this.cards = new ArrayList<Card>();                                                                             // Initialize the cards ArrayList so it is prepared to store Cards
+        
+        for (Card card : cards) {
+            this.cards.add(card);
+        }
+    }
+    
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
     // METHODS //
