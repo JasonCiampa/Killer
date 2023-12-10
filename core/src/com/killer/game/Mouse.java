@@ -11,7 +11,7 @@ public class Mouse {
     
     // FIELDS
     private static Vector3 gameCoordinates = new Vector3();                                         // A Vector3 to hold the Mouse's converted coordinates (Mouse coordinates to Game coordinates)
-    private static float clickCooldown;                                                             // A timer to limit click speed
+    private static float clickCooldown = 0;                                                             // A timer to limit click speed
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     

@@ -13,6 +13,7 @@ public class CasinoTable extends Scene {
     
     // BUTTONS //
     Button playButton;
+    Button passButton;
     ChangeSceneButton quitButton;
     ChangeSceneButton rulesButton;
     
@@ -25,10 +26,17 @@ public class CasinoTable extends Scene {
     public CasinoTable() {
         super("images/casino/killer_table.jpg", "music/Tokens, Please! - Super Paper Mario.mp3", 0, 0);               // Calls the Scene's constructor to build the framework for TitleScreen
         
-        playButton = new Button(Button.SHORT, 720, 20, "Play Cards", this) {                                                    // Creates a playButton
+        playButton = new Button(Button.SHORT, 470, 20, "Play Cards", this) {                                                    // Creates a playButton
             @Override
             public void clickAction() {                                                                                                                         // Overriding the abstract clickAction method from the Button class
                 game.playCards();
+            }
+        };
+        
+        passButton = new Button(Button.SHORT, 970, 20, "Pass Turn", this) {                                                    // Creates a playButton
+            @Override
+            public void clickAction() {                                                                                                                         // Overriding the abstract clickAction method from the Button class
+                game.passTurn();
             }
         };
         
@@ -52,14 +60,32 @@ public class CasinoTable extends Scene {
     @Override
     protected void update() {
         game.update();                                                                                                                                          // Update the GameHandler
-        this.updateButtons();                                                                                                                                   // Updates all of CasinoTable's Buttons
+        
+        if (game.getPlayerInputAllowed()) {
+            this.updateButtons();                                                                                                                                   // Updates all of CasinoTable's Buttons
+        }
+        else {
+            quitButton.update();
+            rulesButton.update();
+        }
     }
     
     @Override
     protected void draw(SpriteBatch batch) {
         batch.draw(this.backgroundImage, this.x, this.y, this.width, this.height);                                                       // Draws CasinoTable's background image onto the screen
         game.draw(batch);                                                                                                                                       // Draws all of the Cards in the Killer game
-        this.drawButtons(batch);                                                                                                                                // Draws all of CasinoTable's Buttons onto the screen
+        
+        if (!game.getPlayerInputAllowed()) {
+            batch.setColor((float) 0.2, (float) 0.2, (float) 0.2, 1);
+            playButton.draw(batch);
+            batch.setColor((float) 0.2, (float) 0.2, (float) 0.2, 1);
+            passButton.draw(batch);
+            quitButton.draw(batch);
+            rulesButton.draw(batch);
+        }
+        else {
+            this.drawButtons(batch);                                                                                                                                // Draws all of CasinoTable's Buttons onto the screen
+        }
     }
     
 }

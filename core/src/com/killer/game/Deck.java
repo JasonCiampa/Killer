@@ -167,13 +167,25 @@ public class Deck {
             Card smallestCard = this.getCard(0);                                                                    // Store the smallest Card in the list as the first Card by default
             int smallestCardIndex = 0;                                                                                      // Store the smallest Card in the list's index value as the first index by default
 
-            for (int card = 1; card < this.getSize(); card++) {                                                      // For every Card in the Deck (except the first since we already have that Card set as smallestCard) ...
+            for (int cardIndex = 1; cardIndex < this.getSize(); cardIndex++) {                                                      // For every Card in the Deck (except the first since we already have that Card set as smallestCard) ...
 //                if (this.getCard(card).getSuit() < smallestCard.getSuit()) {
-                    if (this.getCard(card).getValue() < smallestCard.getValue()) {                                      // If the Card is smaller than smallestCard (has a lower numerical value)...
-                        smallestCard = this.getCard(card);                                                                  // Set the smallestCard to be the current Card
-                        smallestCardIndex = card;                                                                                   // Set the smallestCardIndex to be the index of the current Card
-                    }                  
+//                    if (this.getCard(card).getValue() < smallestCard.getValue()) {                                      // If the Card is smaller than smallestCard (has a lower numerical value)...
+//                    smallestCard = this.getCard(card);                                                                  // Set the smallestCard to be the current Card
+//                    smallestCardIndex = card;                                                                                   // Set the smallestCardIndex to be the index of the current Card
+//                    }                  
 //                }
+                Card card = this.getCard(cardIndex);
+                if (card.getValue() < smallestCard.getValue()) {
+                    smallestCard = card;
+                    smallestCardIndex = cardIndex;
+                }
+                
+                else if (card.getValue() == smallestCard.getValue()) {
+                    if (card.getSuit() < smallestCard.getSuit()) {
+                        smallestCard = card;
+                        smallestCardIndex = cardIndex; 
+                    }
+                }
             }
             
             sortedCards.add(smallestCard);                                                                            // Add the smallestCard to the end of the sortedCards ArrayList

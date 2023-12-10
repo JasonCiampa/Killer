@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public abstract class Button {
         
     // FIELDS//
-    protected final static Texture[] skins = {new Texture("images/button/longButton.jpg"), new Texture("images/button/shortButton.jpg")};           // Stores the Button skins                                                                                                                                        // Skin for the Button
+    protected final static Texture[] skins = {new Texture("images/user_interface/button/longButton.jpg"), new Texture("images/user_interface/button/shortButton.jpg")};           // Stores the Button skins                                                                                                                                        // Skin for the Button
 
     public static final int LONG = 0;                                                                                                                                       // Static field to reference a long button
     public static final int SHORT = 1;                                                                                                                                      // Static field to reference a short button
