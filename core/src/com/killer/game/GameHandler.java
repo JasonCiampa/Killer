@@ -66,9 +66,9 @@ public class GameHandler {
         this.rightHand = this.hands[2];                                                                                                                                                             // Set the right hand equal to the third hand created
         this.playerHand = this.hands[3];                                                                                                                                                            // Set the Player's hand equal to the fourth hand created
         
-//        this.setHand(this.leftHand, Card.LEFT);                                                                                                                                    // Sets up the left hand so that the backs of the Cards are displayed and angled leftward
-//        this.setHand(this.centerHand, Card.CENTER);                                                                                                                                // Sets up the center hand so that the backs of the Cards are displayed
-//        this.setHand(this.rightHand, Card.RIGHT);                                                                                                                                  // Sets up the right hand so that the backs of the Cards are displayed and angled rightward
+        this.setHand(this.leftHand, Card.LEFT);                                                                                                                                    // Sets up the left hand so that the backs of the Cards are displayed and angled leftward
+        this.setHand(this.centerHand, Card.CENTER);                                                                                                                                // Sets up the center hand so that the backs of the Cards are displayed
+        this.setHand(this.rightHand, Card.RIGHT);                                                                                                                                  // Sets up the right hand so that the backs of the Cards are displayed and angled rightward
         
         this.setHandAlignments();                                                                                                                                                                   // Sets the position for every Card in each hand
         
@@ -143,6 +143,10 @@ public class GameHandler {
     
         // Returns whether or not the given Cards are valid doubles
     public boolean validateDoubles(Deck cards) {
+        if (cards.getSize() != 2) {
+            return false;
+        }
+        
         Card firstCard = cards.getCard(0);                                                                                                                                                // Stores a reference to the first Card in the Deck that was passed in
         Card secondCard = cards.getCard(1);                                                                                                                                               // Stores a reference to the second Card in the Deck that was passed in
 
@@ -151,7 +155,7 @@ public class GameHandler {
         }
         
         if (this.roundType != UNDEFINED) {                                                                                                                                                         // If this isn't the first move of the round (meaning that the round type has already been established)...
-            if (secondCard.getValue() < this.currentMove.getCard(1).getValue()) {                                                                                                             // If the second Card in this Deck has a value that is less than the first Card in the currentMove on the table...
+            if (secondCard.getValue() < this.currentMove.getCard(0).getValue()) {                                                                                                             // If the second Card in this Deck has a value that is less than the first Card in the currentMove on the table...
                 return false;                                                                                                                                                                          // Return false because the first card must have the same value or a greater one than the first Card on the table
             }
             
@@ -167,6 +171,10 @@ public class GameHandler {
     
     // Returns whether or not the given Cards are valid triples
     public boolean validateTriples(Deck cards) {
+        if (cards.getSize() != 3) {
+            return false;
+        }
+        
         Card firstCard = cards.getCard(0);                                                                                                                                              // Stores a reference to the first Card in the Deck that was passed in
         Card secondCard = cards.getCard(1);                                                                                                                                             // Stores a reference to the second Card in the Deck that was passed in
         Card thirdCard = cards.getCard(2);                                                                                                                                              // Stores a reference to the third Card in the Deck that was passed in
@@ -185,7 +193,11 @@ public class GameHandler {
     }
     
     // Returns whether or not the given Cards are valid consecutives
-    public boolean validateConsecutives(Deck cards) {        
+    public boolean validateConsecutives(Deck cards) {     
+        if (cards.getSize() < 3) {
+            return false;
+        }
+        
         for (int cardIndex = 1; cardIndex < cards.getSize(); cardIndex++) {                                                                                                                     // For every Card in the Deck that was passed in except the first Card...
             Card previousCard = (cards.getCard(cardIndex - 1));                                                                                                                                         // Store a reference to the Card that comes before the current Card
             Card currentCard = (cards.getCard(cardIndex));                                                                                                                                              // Store a reference to the current Card
@@ -308,7 +320,11 @@ public class GameHandler {
         }
 
         if (this.roundType == SINGLES) {                                                                                                                                                            // If the roundType is singles...
-            return this.validateSingles(tempDeck.getCard(0));                                                                                                                             // Return whether or not the Cards passed in are a valid singles move
+            if (tempDeck.getSize() == 1) {
+                return this.validateSingles(tempDeck.getCard(0));                                                                                                                             // Return whether or not the Cards passed in are a valid singles move
+            }
+            
+            return false;
         }
         else if (this.roundType == DOUBLES) {                                                                                                                                                       // If the roundType is doubles...
             return this.validateDoubles(tempDeck);                                                                                                                                                // Return whether or not the Cards passed in are a valid doubles move
@@ -388,11 +404,11 @@ public class GameHandler {
                 this.hands[this.turnToPlay].removeCard(this.cardsToPlay.get(i));                                                                                                            // Remove the Card from the hand now that it is being played 
             } 
             
-//            if (this.turnToPlay != 3) {                                                                                                                                                             // If the current turn is a bot's turn...
-//                for (Card card : this.currentMove.getCards()) {
-//                    card.flip();
-//                }
-//            }
+            if (this.turnToPlay != 3) {                                                                                                                                                             // If the current turn is a bot's turn...
+                for (Card card : this.currentMove.getCards()) {
+                    card.flip();
+                }
+            }
             
             this.setHandAlignments();
             this.hands[this.turnToPlay].alignCards((float) 0.5, this.hands[this.turnToPlay].getX(), this.hands[this.turnToPlay].getY(), this.hands[this.turnToPlay].getShiftX(), this.hands[this.turnToPlay].getShiftY(), this.hands[this.turnToPlay].getCardWidth(), this.hands[this.turnToPlay].getCardHeight());
