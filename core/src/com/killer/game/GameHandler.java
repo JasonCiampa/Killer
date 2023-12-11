@@ -5,9 +5,9 @@ package com.killer.game;
 // IMPORTS//
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
-import java.util.Random;
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -48,15 +48,17 @@ public class GameHandler {
     private boolean gameOver = false;                                                                                                                                                               // Keeps track of whether or not the game has ended
     private Texture gameOutcome;                                                                                                                                                                    // An image that will display "You Win!" or "You Lose!" at the end of a game
 
+    private Sound error;                                                                                                                                                                            // A Sound that will store the "Error" SFX for the game
     
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
     // CONSTRUCTOR //
     public GameHandler() {
+        this.error = Gdx.audio.newSound(Gdx.files.internal("sfx/error.mp3"));                                                                                                              // Creates the "Error" SFX
         this.fullDeck = new Deck(false);                                                                                                                                                      // Creates a new Deck with 52 cards
         this.cardsToPlay = new ArrayList<Integer>();                                                                                                                                                // Creates an ArrayList of integers used to keep track of the indexes of Cards that might be played
         this.currentMove = new Deck(true);                                                                                                                                                    // Creates a new empty Deck that will store the cards played on the latest turn
-        this.previousMove = new Deck(true);                                                                                                                                                        // Creates a new empty Deck that will store the Cards that have been played this round but are no longer part of the most recent move
+        this.previousMove = new Deck(true);                                                                                                                                                   // Creates a new empty Deck that will store the Cards that have been played this round but are no longer part of the most recent move
         
         this.hands = this.fullDeck.deal(13, 4);                                                                                                                                     // Creates 4 hands with 13 cards each (all cards come from fullDeck, which is now empty)
         this.leftHand = this.hands[0];                                                                                                                                                              // Set the left hand equal to the first hand created
@@ -64,9 +66,9 @@ public class GameHandler {
         this.rightHand = this.hands[2];                                                                                                                                                             // Set the right hand equal to the third hand created
         this.playerHand = this.hands[3];                                                                                                                                                            // Set the Player's hand equal to the fourth hand created
         
-        this.setHand(this.leftHand, Card.LEFT);                                                                                                                                    // Sets up the left hand so that the backs of the Cards are displayed and angled leftward
-        this.setHand(this.centerHand, Card.CENTER);                                                                                                                                // Sets up the center hand so that the backs of the Cards are displayed
-        this.setHand(this.rightHand, Card.RIGHT);                                                                                                                                  // Sets up the right hand so that the backs of the Cards are displayed and angled rightward
+//        this.setHand(this.leftHand, Card.LEFT);                                                                                                                                    // Sets up the left hand so that the backs of the Cards are displayed and angled leftward
+//        this.setHand(this.centerHand, Card.CENTER);                                                                                                                                // Sets up the center hand so that the backs of the Cards are displayed
+//        this.setHand(this.rightHand, Card.RIGHT);                                                                                                                                  // Sets up the right hand so that the backs of the Cards are displayed and angled rightward
         
         this.setHandAlignments();                                                                                                                                                                   // Sets the position for every Card in each hand
         
@@ -85,6 +87,11 @@ public class GameHandler {
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+    // Returns the Deck representing the current move on the table
+    public Deck getCurrentMove() {
+        return this.currentMove;
+    }
+    
     // Returns whether or not input (button presses) from the Player are currently allowed
     public boolean getPlayerInputAllowed() {
         return this.playerInputAllowed;
@@ -110,10 +117,6 @@ public class GameHandler {
         
         if (this.turnToPlay > 3) {                                                                                                                                                                  // If the new index refers to a non-existent hand...
             this.turnToPlay = 0;                                                                                                                                                                        // Set the index to 0 so that the first hand in the list is up again
-        }
-        
-        if (this.turnToPlay != 3) {
-            this.bot.setHand(this.hands[this.turnToPlay]);
         }
     }
     
@@ -148,12 +151,12 @@ public class GameHandler {
         }
         
         if (this.roundType != UNDEFINED) {                                                                                                                                                         // If this isn't the first move of the round (meaning that the round type has already been established)...
-            if (secondCard.getValue() < this.currentMove.getCard(0).getValue()) {                                                                                                             // If the second Card in this Deck has a value that is less than the first Card in the currentMove on the table...
+            if (secondCard.getValue() < this.currentMove.getCard(1).getValue()) {                                                                                                             // If the second Card in this Deck has a value that is less than the first Card in the currentMove on the table...
                 return false;                                                                                                                                                                          // Return false because the first card must have the same value or a greater one than the first Card on the table
             }
             
             if (secondCard.getValue() > Card.VALUE_10 && (secondCard.getValue() == this.currentMove.getCard(0).getValue())) {                                                              // If the Card has a value that is greater than 10 and is equal to the current move Card...
-                if (secondCard.getSuit() < this.currentMove.getCard(0).getSuit()) {                                                                                                           // If the first Card's suit is lower than the first Card's suit in the current move...
+                if (secondCard.getSuit() < this.currentMove.getCard(1).getSuit()) {                                                                                                           // If the first Card's suit is lower than the first Card's suit in the current move...
                     return false;                                                                                                                                                                         // Return false because the first Card doesn't have a high enough suit, and suits are considered with face cards and higher
                 }
             }
@@ -211,6 +214,8 @@ public class GameHandler {
         
         return true;                                                                                                                                                                                // Return true because this is a proper consecutive move
     }
+    
+    
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -352,19 +357,16 @@ public class GameHandler {
     // Plays the currently selected cards from the hand or rejects the play if the move isn't valid
     public void playCards() {
         for (int cardIndex = 0; cardIndex < this.hands[this.turnToPlay].getSize(); cardIndex++) {                                                                                                   // For every card in the hand that is playing their turn...                                                                                  
-            Card card = this.hands[turnToPlay].getCard(cardIndex);                                                                                                                                          // Create a variable to store the Card so it doesn't need to be fetched more than once                                                                                                                             
+            Card card = this.hands[this.turnToPlay].getCard(cardIndex);                                                                                                                                          // Create a variable to store the Card so it doesn't need to be fetched more than once                                                                                                                             
             
             if (card.getSelected()) {                                                                                                                                                                       // If the Card is selected...
                 card.setDrawHighlighted(false);                                                                                                                                                   // Ensure that the Card is not drawn as highlighted
-                this.cardsToPlay.add(cardIndex);                                                                                                                                                              // Add the Card's index into the cardsToPlay Deck
                 card.setSelected(false);                                                                                                                                                                // Unselect the Card now that it is being played
+                this.cardsToPlay.add(cardIndex);                                                                                                                                                              // Add the Card's index into the cardsToPlay Deck
             }
         }    
         
         if(this.cardsToPlay.size() == 0) {
-            if (this.turnToPlay != 3) {
-                this.passTurn();
-            }
             System.out.println("No cards selected.");
             return;
         }
@@ -386,11 +388,11 @@ public class GameHandler {
                 this.hands[this.turnToPlay].removeCard(this.cardsToPlay.get(i));                                                                                                            // Remove the Card from the hand now that it is being played 
             } 
             
-            if (this.turnToPlay != 3) {                                                                                                                                                             // If the current turn is a bot's turn...
-                for (Card card : this.currentMove.getCards()) {
-                    card.flip();
-                }
-            }
+//            if (this.turnToPlay != 3) {                                                                                                                                                             // If the current turn is a bot's turn...
+//                for (Card card : this.currentMove.getCards()) {
+//                    card.flip();
+//                }
+//            }
             
             this.setHandAlignments();
             this.hands[this.turnToPlay].alignCards((float) 0.5, this.hands[this.turnToPlay].getX(), this.hands[this.turnToPlay].getY(), this.hands[this.turnToPlay].getShiftX(), this.hands[this.turnToPlay].getShiftY(), this.hands[this.turnToPlay].getCardWidth(), this.hands[this.turnToPlay].getCardHeight());
@@ -400,8 +402,16 @@ public class GameHandler {
         }
         else {
             // Play an error sound or display an error message since the card that are trying to be played aren't valid
+            for (Card card : this.hands[this.turnToPlay].getCards()) {
+                if (card.getY() > (this.hands[this.turnToPlay].getY() + 5)) {
+                    card.moveDown();
+                }
+            }
+            
             System.out.println("Invalid Cards to Play");
             System.out.println("Round Type: " + this.roundType);
+            this.error.setVolume(this.error.play(), (float) 1.5);
+
         }
         
         this.cardsToPlay.clear();
@@ -431,6 +441,7 @@ public class GameHandler {
             }
         }
         
+        this.bot.setHand(this.hands[this.turnToPlay]);
         this.checkGameProgress();
         
         if (this.roundEnding) {

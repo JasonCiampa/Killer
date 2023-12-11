@@ -5,10 +5,12 @@ package com.killer.game;
 // IMPORTS//
 import java.util.ArrayList;
 import java.util.Random;
+import java.io.*;
+import java.util.List;
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-public class Bot {
+public class Bot extends ArrayList{
     
     // FIELDS //
     private GameHandler game;                                                                   // The Game that the Bot is a part of
@@ -45,7 +47,7 @@ public class Bot {
         ArrayList<Deck> singlesMoveOptions = new ArrayList<Deck>();                                                                                                     // Create an ArrayList of Decks that will each hold a valid singles play
 
         for (Card card : this.hand.getCards()) {                                                                                                                        // For every Card in the bot's hand...
-            if (game.validateSingles(card)) {                                                                                                                               // If the Card is a valid singles play...
+            if (this.game.validateSingles(card)) {                                                                                                                               // If the Card is a valid singles play...
                 singlesMoveOptions.add(new Deck(new Card[] {card}));                                                                                                            // Add the Card into a Deck and put it into the singlesMoveOptions ArrayList
             }                                                                                                                                                                               
         }     
@@ -62,7 +64,7 @@ public class Bot {
             doublesMove.addCard(this.hand.getCard(cardIndex - 1));                                                                                                    // Add the previous Card to the potential doublesMove Deck
             doublesMove.addCard(this.hand.getCard(cardIndex));                                                                                                        // Add the current Card to the potential doublesMove Deck
 
-            if (game.validateDoubles(doublesMove)) {                                                                                                                 // If the Card is a valid doubles play...
+            if (this.game.validateDoubles(doublesMove)) {                                                                                                                 // If the Cards make up a valid doubles play...
                 doublesMoveOptions.add(new Deck(new Card[] {doublesMove.getCard(0), doublesMove.getCard(1)}));                                              // Add the Cards from the doublesMove Deck into a new Deck and put it into the doublesMoveOptions ArrayList
             }
             
@@ -82,7 +84,7 @@ public class Bot {
             triplesMove.addCard(this.hand.getCard(cardIndex - 1));                                                                                                    // Add the previous Card to the potential triplesMove Deck
             triplesMove.addCard(this.hand.getCard(cardIndex));                                                                                                        // Add the current Card to the potential triplesMove Deck
 
-            if (game.validateTriples(triplesMove)) {                                                                                                                 // If the Card is a valid triples play...
+            if (this.game.validateTriples(triplesMove)) {                                                                                                                 // If the Cards make up a valid triples play...
                 triplesMoveOptions.add(new Deck(new Card[] {triplesMove.getCard(0), triplesMove.getCard(1), triplesMove.getCard(2)}));              // Add the Cards from the triplesMove Deck into a new Deck and put it into the triplesMoveOptions ArrayList                                                                                                               // Add the triplesMove Deck into the triplesOptions ArrayList
             }
             
@@ -96,29 +98,32 @@ public class Bot {
     private ArrayList<Deck> getConsecutivesMoves() {
         ArrayList<Deck> consecutivesMoveOptions = new ArrayList<Deck>();                                                                                                // Create an ArrayList of Decks that will each hold a valid consecutives play
         Deck consecutivesMove = new Deck(true);                                                                                                                   // Create a Deck to store the valid consecutives move in
-        
-//        if (game.getRoundType() )
-        
-        
-//        int numCardsNeeded = game.currentMove.getSize();                                                                                                                                                                  // Store the number of Cards needed to produce a valid consecutive play
-//        for (int i = numCardsNeeded - 1; i < botHand.getSize() - (numCardsNeeded - 1); i++) {                                                                                                                             // For every potential consecutive grouping in the hand...
-//            for (int j = (i - (numCardsNeeded - 1)); j < (i + 1); j++) {                                                                                                                                                      // For each Card in the potential consecutive grouping...
-//                cardsToCheck.addCard(botHand.getCard(j));                                                                                                                                                         // Add the Card into the cardsToCheck Deck
-//            }
-//
-//            if (game.validateConsecutives(cardsToCheck)) {                                                                                           // If the group of Cards is a valid consecutives play...
-//                for (int j = (i - (numCardsNeeded - 1)); j < (i + 1); j++) {                                                                              // For each Card in the consecutive grouping...
-//                    botHand.getCard(j).setSelected(true);                                                                                    // Set the Card to be selected for play
-//                }
-//                return;                                                                                                                                       // Return because the bot's move has been selected
-//            }
-//            else {                                                                                                                                    // Otherwise...
-//                cardsToCheck.clearCards();                                                                                                                // Clear out the cardsToCheck Deck since these Cards weren't a valid consecutives play
-//            }
-//        } 
+        Deck currentMove = this.game.getCurrentMove();
+
+        for (int i = 0; i < this.hand.getSize() - 1; i++) {
+            Card currentCard = this.hand.getCard(i);
+            consecutivesMove.addCard(this.hand.getCard(i));
+
+            for (int j = (i + 1); j < this.hand.getSize(); j++) {
+                if (currentCard.getValue() + 1 == this.hand.getCard(j).getValue()) {
+                    currentCard = this.hand.getCard(j);
+                    consecutivesMove.addCard(this.hand.getCard(j));
+                }
+            }
+
+            if (this.game.validateConsecutives(consecutivesMove)) {                                                                                                // If the Cards make up a valid consecutives play...
+                consecutivesMoveOptions.add(new Deck(true));                                                                                                      // Add a new empty Deck to the list of valid consecutives moves
+                for (Card card : consecutivesMove.getCards()) {                                                                                                         // For every Card in this consecutive move...
+                    consecutivesMoveOptions.get(consecutivesMoveOptions.size() - 1).addCard(card);                                                                          // Add the Card to the newly created Deck at the end of consecutivesMoveOptions
+                }
+            }
+
+            consecutivesMove.clearCards();                                                                                                                          // Clear the consecutivesMove Deck so that it is ready to handle a new consecutives move
+        }
             
-        return consecutivesMoveOptions;
+        return consecutivesMoveOptions;                                                                                                                                 // Return the ArrayList of valid consecutives move options
     }
+
     
     // Returns all of the possible valid moves that could be played this turn
     public ArrayList<Deck> getAllMoves() {
@@ -141,7 +146,7 @@ public class Bot {
     
     // Selects a move to play at random
     private void playRandomMove(ArrayList<Deck> moveOptions) {
-        Deck moveToPlay = moveOptions.get(RNG.nextInt(moveOptions.size()));                     // Store a random move from the moveOptions ArrayList as a Deck of Cards
+        Deck moveToPlay = moveOptions.get(this.RNG.nextInt(moveOptions.size()));                     // Store a random move from the moveOptions ArrayList as a Deck of Cards
         int cardIndexToPlay = 0;                                                                // Set the index value of the next Card to play as 0 (the first Card in the move)
 
         for (int cardIndex = 0; cardIndex < this.hand.getSize(); cardIndex++) {                 // For every Card in the Bot's hand...
@@ -149,8 +154,21 @@ public class Bot {
                 this.hand.getCard(cardIndex).setSelected(true);                                         // Set the Card in the Bot's hand to be selected for play
                 cardIndexToPlay++;                                                                      // Move onto the index of the next Card that needs to be played
                 
-                if (cardIndexToPlay >= moveToPlay.getSize()) {                                             // If the index of the next Card to play doesn't exist...
-                    game.playCards();                                                                          // Play the Cards now that every Card has been selected for play
+                if (cardIndexToPlay == moveToPlay.getSize()) {                                             // If the index of the next Card to play doesn't exist...
+                    System.out.println("\n\n\n========================================================================");
+                    System.out.println("Cards in Move: ");
+                    for (Card card : moveToPlay.getCards()){
+                        System.out.println("Value: " + card.getValue() + ", Suit: " + card.getSuit());
+                    }
+                    System.out.println("\n\nCards Selected From Deck: ");
+                    for (Card card : this.hand.getCards()) {
+                        if (card.getSelected()) {
+                            System.out.println("Value: " + card.getValue() + ", Suit: " + card.getSuit());
+                        }
+                    }
+
+                    
+                    this.game.playCards();                                                                          // Play the Cards now that every Card has been selected for play
                     return;                                                                                    // Return here now that the Cards have been played
                 }
             }
@@ -161,24 +179,24 @@ public class Bot {
     public void playTurn() {
         ArrayList<Deck> moveOptions = new ArrayList<Deck>();                                    // Create an ArrayList of Decks that will store all possible moves that can be played
         
-        if (game.getRoundType() == game.SINGLES) {                                              // If this is a singles round...
+        if (this.game.getRoundType() == GameHandler.SINGLES) {                                              // If this is a singles round...
             moveOptions = this.getSinglesMoves();                                                  // Store all possible singles moves into the moveOptions ArrayList
         }
-        else if (game.getRoundType() == game.DOUBLES) {                                         // If this is a doubles round...
+        else if (this.game.getRoundType() == GameHandler.DOUBLES) {                                         // If this is a doubles round...
             moveOptions = this.getDoublesMoves();                                                  // Store all possible doubles moves into the moveOptions ArrayList
         }
-        else if (game.getRoundType() == game.TRIPLES) {                                         // If this is a triples round...
+        else if (this.game.getRoundType() == GameHandler.TRIPLES) {                                         // If this is a triples round...
             moveOptions = this.getTriplesMoves();                                                  // Store all possible triples moves into the moveOptions ArrayList
         }
-        else if (game.getRoundType() == game.CONSECUTIVES) {                                    // If this is a consecutives round...
+        else if (this.game.getRoundType() == GameHandler.CONSECUTIVES) {                                    // If this is a consecutives round...
             moveOptions = this.getConsecutivesMoves();                                             // Store all possible consecutives moves into the moveOptions ArrayList
         }
-        else if (game.getRoundType() == game.UNDEFINED) {                                       // If this is the start of a new round...
+        else if (this.game.getRoundType() == GameHandler.UNDEFINED) {                                       // If this is the start of a new round...
             moveOptions = this.getAllMoves();                                                      // Store all possible moves of every type into the moveOptions ArrayList
         }
         
         if (moveOptions.size() == 0) {                                                          // If the Bot is unable to play any moves...
-            game.passTurn();                                                                        // Pass the turn to the next hand
+            this.game.passTurn();                                                                        // Pass the turn to the next hand
         }
         else {                                                                                  // Otherwise...
             this.playRandomMove(moveOptions);                                                       // Play a random move from the Bot's list of moves

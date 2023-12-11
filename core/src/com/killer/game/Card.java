@@ -169,6 +169,16 @@ public class Card {
         }
     }
     
+    // Moves the Card up by 50 px on the y-axis
+    public void moveUp() {
+        this.move((float) 0.1, this.x, this.y + 50, this.width, this.height);
+    }
+        
+    // Moves the Card down by 50 px on the y-axis
+    public void moveDown() {
+        this.move((float) 0.1, this.x, this.y - 50, this.width, this.height);
+    }
+    
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
    
     // GETTER AND SETTER METHODS //
