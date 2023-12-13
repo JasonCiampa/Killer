@@ -14,8 +14,8 @@ public class CasinoTable extends Scene {
     // BUTTONS //
     Button playButton;
     Button passButton;
+    Button rulesButton;
     ChangeSceneButton quitButton;
-    ChangeSceneButton rulesButton;
     
     // GAMEHANDLER //
     public static GameHandler game;
@@ -37,6 +37,13 @@ public class CasinoTable extends Scene {
             @Override
             public void clickAction() {                                                                                                                         // Overriding the abstract clickAction method from the Button class
                 game.passTurn();
+            }
+        };
+        
+        rulesButton = new Button(Button.SHORT, 1420, 960, "How To Play", this) {                                                    // Creates a playButton
+            @Override
+            public void clickAction() {                                                                                                                         // Overriding the abstract clickAction method from the Button class
+                // DISPLAY RULES TEXTURE AT X = 160 AND Y = 940
             }
         };
         
