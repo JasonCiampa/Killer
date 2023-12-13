@@ -37,6 +37,8 @@ public abstract class Button {
     
     protected boolean mouseHovering;                                                                                                                                        // Whether or not the mouse is hovering over the Button
     
+    protected boolean active;
+    
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
     // CONSTRUCTOR //
@@ -57,6 +59,8 @@ public abstract class Button {
         this.mouseHovering = false;                                                                                                                                         // Sets the Button's mouseHovering state to false
         
         buttonLocation.buttons.add(this);                                                                                                                                 // Adds the Button into a Scene (represented by buttonLocation)
+        
+        this.active = true;
     }
     
 
@@ -78,39 +82,50 @@ public abstract class Button {
     // GETTER AND SETTER METHODS //
     
     // Returns the width of the Button
-    protected int getWidth() {
+    public int getWidth() {
         return this.width;
     }
     
     // Returns the height of the Button
-    protected int getHeight() {
+    public int getHeight() {
         return this.height;
     }
     
     // Returns the x-coordinate of the Button
-    protected int getX() {
+    public int getX() {
         return this.x;
     }
     
     // Returns the y-coordinate of the Button
-    protected int getY() {
+    public int getY() {
         return this.y;
     }
     
     // Returns whether or not the mouse is hovering over the Button
-    protected boolean getMouseHovering() {
+    public boolean getMouseHovering() {
         return this.mouseHovering;
     }
     
     // Sets whether or not the mouse is hovering over the Button
-    protected void setMouseHovering(boolean isHovering) {
+    public void setMouseHovering(boolean isHovering) {
         this.mouseHovering = isHovering;
     }
     
     // Sets the position of the Button
-    protected void setPosition(int x, int y) {
+    public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+    
+    // Sets the Button's text
+    public void setText(String text) {
+        this.text = text;
+        this.textDimensions = new GlyphLayout(this.font, this.text);
+    }
+    
+    // Sets the Button's active state
+    public void setActive(boolean active) {
+        this.active = active;
     }
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -118,23 +133,27 @@ public abstract class Button {
     // STATE HANDLING FUNCTIONS //
     
     protected void update() {
-        this.setMouseHovering(Mouse.checkHover(this.getX(), this.getY(), this.getWidth(), this.getHeight()));                                   // Check if the mouse is hovering over the Button    
+        if (this.active) {
+            this.setMouseHovering(Mouse.checkHover(this.getX(), this.getY(), this.getWidth(), this.getHeight()));                                   // Check if the mouse is hovering over the Button    
             
-        if (this.mouseHovering && Mouse.checkClick()) {                                                                                                              // If the button was clicked on...    
-            this.performAction();                                                                                                                                           // Perform the Button's action
-            return;                                                                                                                                                         // Return now since only one Button can be pressed at once
-        } 
+            if (this.mouseHovering && Mouse.checkClick()) {                                                                                                              // If the button was clicked on...    
+                this.performAction();                                                                                                                                           // Perform the Button's action
+                return;                                                                                                                                                         // Return now since only one Button can be pressed at once
+            }     
+        }
     }
     
     // Draws the Button on the Screen
     protected void draw(SpriteBatch batch) {
-        if (this.mouseHovering) {                                                                                                                                        // If the Button is being hovered over by the mouse...
-            batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                                                     // Make the color dimmer and darker to indicate a hovering state
-        }
+        if (this.active) {
+            if (this.mouseHovering) {                                                                                                                                        // If the Button is being hovered over by the mouse...
+                batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                                                     // Make the color dimmer and darker to indicate a hovering state
+            }
         
-        batch.draw(skin, this.x, this.y, this.width, this.height);                                                                                // Draw the Button
-        font.draw(batch, text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));        // Writes the Button's text
-        batch.setColor(1, 1, 1, 1);                                                                                                                              // Sets the current drawing color to normal
+            batch.draw(skin, this.x, this.y, this.width, this.height);                                                                                                         // Draw the Button
+            font.draw(batch, this.text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));        // Writes the Button's text
+            batch.setColor(1, 1, 1, 1);                                                                                                                                       // Sets the current drawing color to normal    
+        }
     }
 }
 

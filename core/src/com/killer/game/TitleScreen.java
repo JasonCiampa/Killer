@@ -18,8 +18,8 @@ public class TitleScreen extends Scene {
     private Texture killerLogo;                                                                                                                                                      // Stores the Killer Logo to be drawn on the screen
     
     // BUTTONS
-    ChangeSceneButton playButton;                                                                                                                                                    // Stores the play Button which will start the game
-    Button quitButton;                                                                                                                                                               // Stores the quit Button which will exit the game
+    private ChangeSceneButton playButton;                                                                                                                                                    // Stores the play Button which will start the game
+    private Button quitButton;                                                                                                                                                               // Stores the quit Button which will exit the game
         
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
