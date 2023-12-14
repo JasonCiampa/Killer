@@ -126,7 +126,7 @@ public class GameHandler {
     
     // Returns whether or not the given Card is a valid single
     public boolean validateSingles(Card card) {
-        if (this.roundType != UNDEFINED) {
+        if (this.roundType != UNDEFINED) {                                                                                                                                                          // If this is the first move of the round...
             if (card.getValue() < this.currentMove.getCard(0).getValue()) {                                                                                                                    // If the Card that was passed in doesn't have the same value or a greater on than the Card on the table currently...
                 return false;                                                                                                                                                                               // Return false because this isn't a proper singles move
             }
@@ -143,15 +143,15 @@ public class GameHandler {
     
         // Returns whether or not the given Cards are valid doubles
     public boolean validateDoubles(Deck cards) {
-        if (cards.getSize() != 2) {
-            return false;
+        if (cards.getSize() != 2) {                                                                                                                                                               // If there are not exactly two Cards...
+            return false;                                                                                                                                                                             // Return false because this isn't a proper doubles move
         }
         
         Card firstCard = cards.getCard(0);                                                                                                                                                // Stores a reference to the first Card in the Deck that was passed in
         Card secondCard = cards.getCard(1);                                                                                                                                               // Stores a reference to the second Card in the Deck that was passed in
 
-        if (firstCard.getValue() != secondCard.getValue()) {                                                                                                                                                    // If the two cards don't have the same value...
-            return false;                                                                                                                                                                               // Return false because this isn't a proper doubles move
+        if (firstCard.getValue() != secondCard.getValue()) {                                                                                                                                      // If the two cards don't have the same value...
+            return false;                                                                                                                                                                             // Return false because this isn't a proper doubles move
         }
         
         if (this.roundType != UNDEFINED) {                                                                                                                                                         // If this isn't the first move of the round (meaning that the round type has already been established)...
@@ -166,13 +166,13 @@ public class GameHandler {
             }
         }
         
-        return true;                                                                                                                                                                                // Return true because this is a proper triples move
+        return true;                                                                                                                                                                                // Return true because this is a proper doubles move
     }
     
     // Returns whether or not the given Cards are valid triples
     public boolean validateTriples(Deck cards) {
-        if (cards.getSize() != 3) {
-            return false;
+        if (cards.getSize() != 3) {                                                                                                                                                             // If there are not exactly three cards...
+            return false;                                                                                                                                                                           // Return false because this isn't a proper triples move
         }
         
         Card firstCard = cards.getCard(0);                                                                                                                                              // Stores a reference to the first Card in the Deck that was passed in
@@ -194,8 +194,8 @@ public class GameHandler {
     
     // Returns whether or not the given Cards are valid consecutives
     public boolean validateConsecutives(Deck cards) {     
-        if (cards.getSize() < 3) {
-            return false;
+        if (cards.getSize() < 3) {                                                                                                                                                              // If there are not at least 3 Cards...
+            return false;                                                                                                                                                                           // Return false because this is not a valid consecutives move
         }
         
         for (int cardIndex = 1; cardIndex < cards.getSize(); cardIndex++) {                                                                                                                     // For every Card in the Deck that was passed in except the first Card...
@@ -246,7 +246,7 @@ public class GameHandler {
         
         this.previousMove.clearCards();
         this.currentMove.clearCards();                                                                                                                                                              // Clear the table for the start of the new round
-        this.roundType = UNDEFINED;                                                                                                                                                                     // Set the round type to undefined (this will be changed when the first cards are played down)
+        this.roundType = UNDEFINED;                                                                                                                                                                 // Set the round type to undefined (this will be changed when the first cards are played down)
     }
     
     // Checks how far the round has progressed
@@ -261,22 +261,22 @@ public class GameHandler {
         
         if (activeHands.size() == 1) {                                                                                                                                                              // If there is only one active hand...
             this.turnToPlay = activeHands.get(0);                                                                                                                                                 // Set that active hand to have their turn first next round since they won this round
-            this.timer = 2;
-            this.roundEnding = true;                                                                                                                                                                     // Start the new round
-            this.startNewRound();
+            this.timer = 2;                                                                                                                                                                            // Set a two second timer
+            this.roundEnding = true;                                                                                                                                                                   // Set the roundEnding status to true
+            this.startNewRound();                                                                                                                                                                      // Start the new round
         }
     }
     
     private void checkGameProgress() {
-        for (Deck hand : this.hands) {
-            if (hand.getSize() == 0) {
-                this.gameOver = true;
-                this.timer = 2;
-                if (hand == this.hands[3]) {
-                    this.gameOutcome = new Texture(Gdx.files.internal("images/user_interface/you_win.png"));
-                }
-                else {
-                    this.gameOutcome = new Texture(Gdx.files.internal("images/user_interface/you_lose.png"));
+        for (Deck hand : this.hands) {                                                                                                                                                              // For every hand in the game...
+            if (hand.getSize() == 0) {                                                                                                                                                                  // If there are no Cards left in the hand...
+                this.gameOver = true;                                                                                                                                                                   // Set the gameOver status to true
+                this.timer = 2;                                                                                                                                                                         // Set a two second timer
+                if (hand == this.hands[3]) {                                                                                                                                                            // If the hand with no Cards is the Player's hand...
+                    this.gameOutcome = new Texture(Gdx.files.internal("images/user_interface/you_win.png"));                                                                                     // Set the gameOutcome to be "You Win!"
+                }   
+                else {                                                                                                                                                                                  // Otherwise...
+                    this.gameOutcome = new Texture(Gdx.files.internal("images/user_interface/you_lose.png"));                                                                                     // Set the gameOutcome to be "You Lose!"
                 }
             }
         }
@@ -286,8 +286,8 @@ public class GameHandler {
     private int determineRoundType(Deck startingCards) {
         int numCards = startingCards.getSize();                                                                                                                                                     // Store the number of cards in the Deck that was passed in
 
-        if (numCards == 1) {
-            this.roundType = SINGLES;
+        if (numCards == 1) {                                                                                                                                                                        // If there is one Card...
+            this.roundType = SINGLES;                                                                                                                                                                   // Set the roundType to singles
         }
         else if (numCards == 2) {                                                                                                                                                                   // If there are two cards...
             if (this.validateDoubles(startingCards)) {                                                                                                                                            // If the cards are a valid double play...
@@ -306,7 +306,7 @@ public class GameHandler {
             if (this.validateConsecutives(startingCards)) {                                                                                                                                       // If the cards are a valid consecutive play...
                 this.roundType = CONSECUTIVES;                                                                                                                                                              // Set the roundType to be consecutives
             }
-        }                                                                                                                                                                                    // No check for singles because any single card thrown at the start of the round has to be valid by default
+        }                                                                                                                                                                                    
         
         return this.roundType;                                                                                                                                                                      // Return the roundType
     }
@@ -315,16 +315,14 @@ public class GameHandler {
     private boolean checkMoveValidity(ArrayList<Integer> cardIndices) {
         Deck tempDeck = new Deck(true);                                                                                                                                                       // Creates a temporary empty Deck that will hold all of the Cards to check the validity of
 
-        for (int i = 0; i < cardIndices.size(); i++) {                                                                                                                                          // For every cardIndex in the cardIndices list...
-            tempDeck.addCard(this.hands[this.turnToPlay].getCard(cardIndices.get(i)));                                                                                                                     // Use the cardIndex to copy the Card from the current turn hand 
+        for (int i = 0; i < cardIndices.size(); i++) {                                                                                                                                             // For every cardIndex in the cardIndices list...
+            tempDeck.addCard(this.hands[this.turnToPlay].getCard(cardIndices.get(i)));                                                                                                // Use the cardIndex to copy the Card from the current turn hand 
         }
 
         if (this.roundType == SINGLES) {                                                                                                                                                            // If the roundType is singles...
-            if (tempDeck.getSize() == 1) {
-                return this.validateSingles(tempDeck.getCard(0));                                                                                                                             // Return whether or not the Cards passed in are a valid singles move
+            if (tempDeck.getSize() == 1) {                                                                                                                                                              // If there is only one Card in the move...
+                return this.validateSingles(tempDeck.getCard(0));                                                                                                                             // Return whether or not the Card passed in is a valid singles move
             }
-            
-            return false;
         }
         else if (this.roundType == DOUBLES) {                                                                                                                                                       // If the roundType is doubles...
             return this.validateDoubles(tempDeck);                                                                                                                                                // Return whether or not the Cards passed in are a valid doubles move
@@ -382,8 +380,9 @@ public class GameHandler {
             }
         }    
         
-        if(this.cardsToPlay.size() == 0) {
-            System.out.println("No cards selected.");
+        if(this.cardsToPlay.size() == 0) {                                                                                                                                                         // If there are no cards to play...
+            System.out.println("No cards selected.");  
+            this.error.setVolume(this.error.play(), (float) 1.5);
             return;
         }
         
