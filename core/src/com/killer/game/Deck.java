@@ -25,31 +25,35 @@ public class Deck {
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
-    // CONSTRUCTOR //
+    // CONSTRUCTORS //
     
-    // Creates a Deck of 52 unique cards and shuffles them into a random order
+    // Creates a Deck of 52 unique cards and shuffles them into a random order, or creates an empty Deck depending on the "empty" value passed in
     public Deck(boolean empty) {
         this.cards = new ArrayList<Card>();                                                                             // Initialize the cards ArrayList so it is prepared to store Cards
         
-        if (empty) {
-            return;
+        if (empty) {                                                                                                    // If the Deck is supposed to be empty...
+            return;                                                                                                         // Return here, don't add any Cards
         }
         
-        for (int suit = 0; suit < 4; suit++) {                                                                          // For each possible suit value...
-            for (int cardValue = 0; cardValue < 13; cardValue++) {                                                      // For each possible cardValue...
-                this.cards.add(new Card(0, 0, suit, cardValue));                                              // Add a new Card to the cards ArrayList with the current suit and cardValue
+        for (int suit = 0; suit < 4; suit++) {                                                                         // For each possible suit value...
+            for (int cardValue = 0; cardValue < 13; cardValue++) {                                                     // For each possible cardValue...
+                this.cards.add(new Card(0, 0, suit, cardValue));                                               // Add a new Card to the cards ArrayList with the current suit and cardValue
             }
         }
         
         this.shuffle();                                                                                                 // Shuffle the deck
     }
     
+    
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    
+    
     // Creates a Deck with the given Cards in their given order
     public Deck(Card[] cards) {
         this.cards = new ArrayList<Card>();                                                                             // Initialize the cards ArrayList so it is prepared to store Cards
         
-        for (Card card : cards) {
-            this.cards.add(card);
+        for (Card card : cards) {                                                                                       // For every Card that was passed in...
+            this.cards.add(card);                                                                                         // Add the Card into the Deck
         }
     }
     
@@ -149,16 +153,16 @@ public class Deck {
     
     // Sets the alignment values for a Deck
     public void setAlignment(float x, float y, float shiftX, float shiftY, float cardWidth, float cardHeight) {
-        this.setX(x);
-        this.setY(y);
-        this.setShiftX(shiftX);
-        this.setShiftY(shiftY);
-        this.cardWidth = cardWidth;
-        this.cardHeight = cardHeight;
+        this.setX(x);                                                                                               // Set the x-coordinate for the Deck
+        this.setY(y);                                                                                               // Set the y-coordinate for the Deck
+        this.setShiftX(shiftX);                                                                                     // Set the shiftX value for the Deck
+        this.setShiftY(shiftY);                                                                                     // Set the shiftY value for the Deck
+        this.cardWidth = cardWidth;                                                                                 // Set the value that the width of each Card in the Deck should be
+        this.cardHeight = cardHeight;                                                                               // Set the value that the height of each Card in the Deck should be
         
-        for (Card card : this.cards) {
-            card.setWidth(this.cardWidth);
-            card.setHeight(this.cardHeight);
+        for (Card card : this.cards) {                                                                              // For every Card in the Deck...
+            card.setWidth(this.cardWidth);                                                                          // Set the width of the Card
+            card.setHeight(this.cardHeight);                                                                       // Set the height of the Card
         }
     }
     
@@ -174,34 +178,29 @@ public class Deck {
         
         while (sortedCards.size() < cardListSize) {                                                                     // While the sortedCards list isn't complete...
             Card smallestCard = this.getCard(0);                                                                    // Store the smallest Card in the list as the first Card by default
-            int smallestCardIndex = 0;                                                                                      // Store the smallest Card in the list's index value as the first index by default
+            int smallestCardIndex = 0;                                                                                     // Store the smallest Card in the list's index value as the first index by default
 
-            for (int cardIndex = 1; cardIndex < this.getSize(); cardIndex++) {                                                      // For every Card in the Deck (except the first since we already have that Card set as smallestCard) ...
-//                if (this.getCard(card).getSuit() < smallestCard.getSuit()) {
-//                    if (this.getCard(card).getValue() < smallestCard.getValue()) {                                      // If the Card is smaller than smallestCard (has a lower numerical value)...
-//                    smallestCard = this.getCard(card);                                                                  // Set the smallestCard to be the current Card
-//                    smallestCardIndex = card;                                                                                   // Set the smallestCardIndex to be the index of the current Card
-//                    }                  
-//                }
-                Card card = this.getCard(cardIndex);
-                if (card.getValue() < smallestCard.getValue()) {
-                    smallestCard = card;
-                    smallestCardIndex = cardIndex;
+            for (int cardIndex = 1; cardIndex < this.getSize(); cardIndex++) {                                             // For every Card in the Deck (except the first since we already have that Card set as smallestCard) ...
+                Card card = this.getCard(cardIndex);                                                                           // Store a reference to the Card
+                
+                if (card.getValue() < smallestCard.getValue()) {                                                               // If the Card's value is less than the smallest Card's value...                                                
+                    smallestCard = card;                                                                                           // Set the Card to be the new smallest Card
+                    smallestCardIndex = cardIndex;                                                                                 // Store the index of the smallest Card
                 }
                 
-                else if (card.getValue() == smallestCard.getValue()) {
-                    if (card.getSuit() < smallestCard.getSuit()) {
-                        smallestCard = card;
-                        smallestCardIndex = cardIndex; 
+                else if (card.getValue() == smallestCard.getValue()) {                                                         // Otherwise, if the Card's value is equal to the smallest Card's value...
+                    if (card.getSuit() < smallestCard.getSuit()) {                                                                 // If the Card's suit is less than the smallest Card's suit...
+                        smallestCard = card;                                                                                       // Set the Card to be the new smallest Card
+                        smallestCardIndex = cardIndex;                                                                             // Store the index of the smallest Card
                     }
                 }
             }
             
-            sortedCards.add(smallestCard);                                                                            // Add the smallestCard to the end of the sortedCards ArrayList
-            this.removeCard(smallestCardIndex);                                                                // Remove the smallestCard from the Deck so that it isn't duplicated
+            sortedCards.add(smallestCard);                                                                              // Add the smallestCard to the end of the sortedCards ArrayList
+            this.removeCard(smallestCardIndex);                                                                    // Remove the smallestCard from the Deck so that it isn't duplicated
         }
         
-        this.cards = sortedCards;                                                                                       // Set the Deck to hold the sortedCards
+        this.cards = sortedCards;                                                                                         // Set the Deck to hold the sortedCards
     }
     
     // Deals a specified number of Cards out into a specified number of hands and returns the hands

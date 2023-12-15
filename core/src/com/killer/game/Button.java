@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public abstract class Button {
         
     // FIELDS//
-    protected final static Texture[] skins = {new Texture("images/user_interface/button/longButton.jpg"), new Texture("images/user_interface/button/shortButton.jpg")};           // Stores the Button skins                                                                                                                                        // Skin for the Button
+    protected final static Texture[] skins = {new Texture("images/user_interface/button/longButton.jpg"), new Texture("images/user_interface/button/shortButton.jpg")};     // Stores the Button skins                                                                                                                                        
 
     public static final int LONG = 0;                                                                                                                                       // Static field to reference a long button
     public static final int SHORT = 1;                                                                                                                                      // Static field to reference a short button
@@ -37,7 +37,9 @@ public abstract class Button {
     
     protected boolean mouseHovering;                                                                                                                                        // Whether or not the mouse is hovering over the Button
     
-    protected boolean active;
+    protected Scene buttonLocation;                                                                                                                                         // The Scene that the Button is being stored in
+    
+    protected boolean active;                                                                                                                                               // Whether or not the Button is active
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -51,16 +53,17 @@ public abstract class Button {
         this.scaleX = scaleX;                                                                                                                                               // Sets the scale factor for the x-axis of the Button
         this.scaleY = scaleY;                                                                                                                                               // Sets the scale factor for the y-axis of the Button
         this.text = text;                                                                                                                                                   // Sets the Button's text    
-        this.font = new BitmapFont(Gdx.files.internal("fonts/showcard_gothic.fnt"));                                                                           // Sets the Button's font
-        this.textDimensions = new GlyphLayout(this.font, this.text);                                                                                               // Stores the Button's text dimensions
+        this.font = new BitmapFont(Gdx.files.internal("fonts/showcard_gothic.fnt"));                                                                                        // Sets the Button's font
+        this.textDimensions = new GlyphLayout(this.font, this.text);                                                                                                        // Stores the Button's text dimensions
 
-        this.clickSfx = Gdx.audio.newSound(Gdx.files.internal("sfx/button_click.mp3"));                                                                      // Sets the Button's click noise   
+        this.clickSfx = Gdx.audio.newSound(Gdx.files.internal("sfx/button_click.mp3"));                                                                                     // Sets the Button's click noise   
         
         this.mouseHovering = false;                                                                                                                                         // Sets the Button's mouseHovering state to false
         
-        buttonLocation.buttons.add(this);                                                                                                                                 // Adds the Button into a Scene (represented by buttonLocation)
+        this.buttonLocation = buttonLocation;                                                                                                                               // Sets the Scene that the Button belongs to
+        this.buttonLocation.buttons.add(this);                                                                                                                            // Adds the Button into a Scene (represented by buttonLocation)
         
-        this.active = true;
+        this.active = true;                                                                                                                                                 // Sets the Button to be active
     }
     
 
@@ -134,9 +137,9 @@ public abstract class Button {
     
     protected void update() {
         if (this.active) {
-            this.setMouseHovering(Mouse.checkHover(this.getX(), this.getY(), this.getWidth(), this.getHeight()));                                   // Check if the mouse is hovering over the Button    
+            this.setMouseHovering(Mouse.checkHover(this.getX(), this.getY(), this.getWidth(), this.getHeight()));                                       // Check if the mouse is hovering over the Button    
             
-            if (this.mouseHovering && Mouse.checkClick()) {                                                                                                              // If the button was clicked on...    
+            if (this.mouseHovering && Mouse.checkClick()) {                                                                                                                 // If the button was clicked on...    
                 this.performAction();                                                                                                                                           // Perform the Button's action
                 return;                                                                                                                                                         // Return now since only one Button can be pressed at once
             }     
@@ -147,12 +150,13 @@ public abstract class Button {
     protected void draw(SpriteBatch batch) {
         if (this.active) {
             if (this.mouseHovering) {                                                                                                                                        // If the Button is being hovered over by the mouse...
-                batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                                                     // Make the color dimmer and darker to indicate a hovering state
+                batch.setColor((float) 0.5, (float) 0.5, (float) 0.5, 1);                                                                                                       // Make the color dimmer and darker to indicate a hovering state
             }
+
         
-            batch.draw(skin, this.x, this.y, this.width, this.height);                                                                                                         // Draw the Button
-            font.draw(batch, this.text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));        // Writes the Button's text
-            batch.setColor(1, 1, 1, 1);                                                                                                                                       // Sets the current drawing color to normal    
+            batch.draw(skin, this.x, this.y, this.width, this.height);                                                                                                       // Draw the Button
+            font.draw(batch, this.text, (this.x + (this.width / 2) - (this.textDimensions.width / 2)), (this.y + this.height / 2) + (this.textDimensions.height / 2));       // Writes the Button's text
+            batch.setColor(1, 1, 1, 1);                                                                                                                                      // Sets the current drawing color to normal    
         }
     }
 }

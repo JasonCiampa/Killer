@@ -33,7 +33,7 @@ public class Killer extends ApplicationAdapter {
     public void create () {
         // CAMERA
         camera = new OrthographicCamera();                                                                                  // Creates a new Camera
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());         // Camera sets the viewport to 1080p
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());                                        // Camera sets the viewport to 1080p
         
         // SCENES
         titleScreen = new TitleScreen();                                                                                    // Creates the TitleScreen Scene
@@ -52,16 +52,16 @@ public class Killer extends ApplicationAdapter {
     // RENDER METHOD (GAME UPDATE / GAME DRAW)
     @Override
     public void render () {
-        ScreenUtils.clear(1, 1, 1, 1);                                                                              // Sets the screen to white
+        ScreenUtils.clear(1, 1, 1, 1);                                                                                      // Sets the screen to white
         
         camera.update();                                                                                                    // Update the Camera once every frame
-        batch.setProjectionMatrix(camera.combined);                                                               // Tells the SpriteBatch to use the Camera's coordinate system (screen/image coords held in a matrix)
+        batch.setProjectionMatrix(camera.combined);                                                                         // Tells the SpriteBatch to use the Camera's coordinate system (screen/image coords held in a matrix)
         batch.begin();                                                                                                      // Starts the new "batch" of drawings for this frame
         
         Mouse.update();                                                                                                     // Updates the Mouse
         
         activeScene.update();                                                                                               // Updates the activeScene
-        activeScene.draw(batch);                                                                                            // Draws the activeScene
+        activeScene.draw(batch);                                                                                          // Draws the activeScene
 
         batch.end();                                                                                                        // Ends the "batch" of drawings for this frame
     }

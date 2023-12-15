@@ -50,10 +50,10 @@ public class Card {
     private Texture skinBack;                                                                                                       // Stores the Card's back skin
     private Texture currentSkin;                                                                                                    // Stores the Card's currently active skin
             
-    private float width;                                                                                                              // Stores the Card's width
-    private float height;                                                                                                             // Stores the Card's height
-    private float x;                                                                                                                  // Stores the Card's x-coordinate
-    private float y;                                                                                                                  // Stores the Card's y-coordinate
+    private float width;                                                                                                            // Stores the Card's width
+    private float height;                                                                                                           // Stores the Card's height
+    private float x;                                                                                                                // Stores the Card's x-coordinate
+    private float y;                                                                                                                // Stores the Card's y-coordinate
     
     private boolean mouseHovering;                                                                                                  // Stores whether or not the mouse is hovering over the Card
     private boolean drawHighlighted;                                                                                                // Stores whether or not the Card should be drawn as highlighted
@@ -79,9 +79,9 @@ public class Card {
                 skins[HEART][cardValue] = new Texture("images/cards/hearts/hearts_" + cardValue + ".jpg");                                  // Add a hearts card with the current cardValue to the hearts subarray
             }
             
-            skins[BACK][LEFT] = new Texture("images/cards/backs/card_back_left.png");                                   // Set the back skin for the left side of the table's cards
-            skins[BACK][CENTER] = new Texture("images/cards/backs/card_back_center.jpg");                               // Set the back skin for the center edge of the table's cards
-            skins[BACK][RIGHT] = new Texture("images/cards/backs/card_back_right.png");                                 // Set the back skin for the right side of the table's cards
+            skins[BACK][LEFT] = new Texture("images/cards/backs/card_back_left.png");                                               // Set the back skin for the left side of the table's cards
+            skins[BACK][CENTER] = new Texture("images/cards/backs/card_back_center.jpg");                                           // Set the back skin for the center edge of the table's cards
+            skins[BACK][RIGHT] = new Texture("images/cards/backs/card_back_right.png");                                             // Set the back skin for the right side of the table's cards
         }
         
         this.suit = suit;                                                                                                           // Set the suit of the Card
@@ -112,29 +112,34 @@ public class Card {
     
     // METHODS
     
-    
-    // Plays the card onto the table at the given x and y coordinates with the given dimensions
-    public void play(float x, float y) {
-        
-    }
-    
     // Moves the Card to newX, newY with dimensions newWidth newHeight over the duration of the timer
     public void move(float timer, float newX, float newY, float newWidth, float newHeight) {
-        this.timer = timer;
+        this.timer = timer;                                                                                                         // Sets the timer value
         
-        if (this.timer == 0) {
-            this.x = newX;
-            this.y = newY;
-            this.width = newWidth;
-            this.height = newHeight;
-            return;
+        if (this.timer == 0) {                                                                                                      // If the timer has finished...
+            this.x = newX;                                                                                                              // Set the new x-coordinate for the Card
+            this.y = newY;                                                                                                              // Set the new y-coordinate for the Card
+            this.width = newWidth;                                                                                                      // Set the new width for the Card
+            this.height = newHeight;                                                                                                    // Set the new height for the Card
+            return;                                                                                                                     // Return because the Card is done moving
         }
         
-        this.dx = ((this.x - newX) / this.timer) * -1;
-        this.dy = ((this.y - newY) / this.timer) * -1;
-        this.dw = ((this.width - newWidth) / this.timer) * -1;
-        this.dh = ((this.height - newHeight) / this.timer) * -1;
+        this.dx = ((this.x - newX) / this.timer) * -1;                                                                              // Set the movement speed along the x-axis
+        this.dy = ((this.y - newY) / this.timer) * -1;                                                                              // Set the movement speed along the y-axis    
+        this.dw = ((this.width - newWidth) / this.timer) * -1;                                                                      // Set the resizing speed for the width
+        this.dh = ((this.height - newHeight) / this.timer) * -1;                                                                    // Set the resizing speed for the height
     }
+    
+    // Moves the Card up by 50 px on the y-axis
+    public void moveUp() {
+        this.move((float) 0.1, this.x, this.y + 50, this.width, this.height);
+    }
+        
+    // Moves the Card down by 50 px on the y-axis
+    public void moveDown() {
+        this.move((float) 0.1, this.x, this.y - 50, this.width, this.height);
+    }
+    
     
     // Flips the Card from its current state (face up or face down)
     public void flip() {
@@ -152,32 +157,23 @@ public class Card {
     // Sets the selected state of the card to the opposite of what it was at the time of the function call
     public void toggleSelected() {
         if (this.currentSkin == this.skinFront) {                                                                                   // If the Card's front skin is the currently active skin...
-            this.mouseHovering = Mouse.checkHover((int) this.x, (int) this.y, (int) this.width, (int) this.height);                                         // Determine whether or not the mouse is hovering over the Card
+            this.mouseHovering = Mouse.checkHover((int) this.x, (int) this.y, (int) this.width, (int) this.height);                     // Determine whether or not the mouse is hovering over the Card
         
             if (this.mouseHovering && Mouse.checkClick()) {                                                                         // If the mouse is hovering over the Card AND the Mouse was clicked on the Card...
-                if (this.selected) {
-                    this.selected = false;
-                    this.drawHighlighted = false;
-                    this.move((float) 0.1, this.x, this.y - 50, this.width, this.height);
+                if (this.selected) {                                                                                                    // If the Card is selected...
+                    this.selected = false;                                                                                                  // Unselect the Card
+                    this.drawHighlighted = false;                                                                                           // Turn off the highlighted color for the Card
+                    this.moveDown();                                                                                                        // Move the Card down by 50 px in 0.1 seconds
                 }
-                else {
-                    this.selected = true;
-                    this.drawHighlighted = true;
-                    this.move((float) 0.1, this.x, this.y + 50, this.width, this.height);
+                else {                                                                                                              // Otherwise...
+                    this.selected = true;                                                                                               // Select the Card
+                    this.drawHighlighted = true;                                                                                        // Turn on the highlighted color for the Card
+                    this.moveUp();                                                                                                      // Move the Card up by 50 px in 0.1 seconds
                 }
             }
         }
     }
     
-    // Moves the Card up by 50 px on the y-axis
-    public void moveUp() {
-        this.move((float) 0.1, this.x, this.y + 50, this.width, this.height);
-    }
-        
-    // Moves the Card down by 50 px on the y-axis
-    public void moveDown() {
-        this.move((float) 0.1, this.x, this.y - 50, this.width, this.height);
-    }
     
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
    
@@ -240,12 +236,12 @@ public class Card {
         
     // Sets the Card's front skin
     public void setFrontSkin(int cardSuit, int cardValue) {
-        this.skinFront = skins[cardSuit][cardValue];                                                                                // Sets the Card's frontSkin based on the passed in suit and value
+        this.skinFront = skins[cardSuit][cardValue];                                                                                
     }
     
     // Sets the Card's back skin
     public void setBackSkin(int cardSuit, int cardValue) {
-        this.skinBack = skins[cardSuit][cardValue];                                                                                 // Sets the Card's backSkin based on the passed in suit and value
+        this.skinBack = skins[cardSuit][cardValue];                                                                                 
     }
     
     // Sets the Card's width
@@ -278,27 +274,27 @@ public class Card {
     public void update() {
         float dt = Gdx.graphics.getDeltaTime();                                                                                     // Gets the amount of time since the last frame occurred
         
-        if (timer > 0) {                                                                                                        // If the Card is currently in motion...
-            this.timer = this.timer - dt;                                                                                       // Adjust the timer by the amount of time since the last frame occurred
-            this.width = (this.width + (this.dw * dt));                                                                             // Adjust the Card's width by the amount the Card should scale up this frame
-            this.height = (this.height + (this.dh * dt));                                                                           // Adjust the Card's height by the amount the Card should scale up this frame
-            this.x = (this.x + (this.dx * dt));                                                                                     // Adjust the Card's x-value by the amount the Card should move along the x-axis this frame
-            this.y = (this.y + (this.dy * dt));                                                                                     // Adjust the Card's y-value by the amount the Card should move along the y-axis this frame
-            return;                                                                                                                 // Return so that the Card's movement isn't interrupted
+        if (timer > 0) {                                                                                                            // If the Card is currently in motion...
+            this.width = (this.width + (this.dw * dt));                                                                                 // Adjust the Card's width by the amount the Card should scale up this frame
+            this.height = (this.height + (this.dh * dt));                                                                               // Adjust the Card's height by the amount the Card should scale up this frame
+            this.x = (this.x + (this.dx * dt));                                                                                         // Adjust the Card's x-value by the amount the Card should move along the x-axis this frame
+            this.y = (this.y + (this.dy * dt));                                                                                         // Adjust the Card's y-value by the amount the Card should move along the y-axis this frame
+            this.timer = this.timer - dt;                                                                                               // Adjust the timer by the amount of time since the last frame occurred
+            return;                                                                                                                     // Return so that the Card's movement isn't interrupted
         } 
-        else if (timer < 0) {
-            this.width = (this.width + (this.dw * this.timer));
-            this.height = (this.height + (this.dh * this.timer));
-            this.x = (this.x + (this.dx * this.timer));
-            this.y = (this.y + (this.dy * this.timer));
-            this.timer = 0;
+        else if (timer < 0) {                                                                                                       // Otherwise, if the Card has finished moving...
+            this.width = (this.width + (this.dw * this.timer));                                                                         // Adjust the width of the Card so that it hasn't gotten slightly bigger/smaller than it was supposed to
+            this.height = (this.height + (this.dh * this.timer));                                                                       // Adjust the height of the Card so that it hasn't gotten slightly bigger/smaller than it was supposed to
+            this.x = (this.x + (this.dx * this.timer));                                                                                 // Adjust the x-coordinate of the Card so that it hasn't moved slightly to the left/right of where it was supposed to be
+            this.y = (this.y + (this.dy * this.timer));                                                                                 // Adjust the y-coordinate of the Card so that it hasn't moved slightly to the left/right of where it was supposed to be
+            this.timer = 0;                                                                                                             // Reset the timer back to 0
         }
     }
     
     // Draws the Card onto the screen in its current state so it is visible to the user
     public void draw(SpriteBatch batch) {
         if(this.drawHighlighted) {                                                                                                  // If the Card is selected...
-            batch.setColor((float) 1, (float) 0.51, (float) 0.59, 1);                                                               // Set the color to be reddish to indicate that the Card is selected
+            batch.setColor((float) 1, (float) 0.51, (float) 0.59, 1);                                                                   // Set the color to be reddish to indicate that the Card is selected
         }
         else {                                                                                                                      // Otherwise...
             if (this.mouseHovering) {                                                                                                   // If the mouse is hovering over the Card...
@@ -306,7 +302,7 @@ public class Card {
             }
         }
         
-        batch.draw(this.currentSkin, this.x, this.y, this.width, this.height);                                                                    // Draw the Card at it's x and y coordinates with it's current skin
-        batch.setColor(1, 1, 1, 1);                                                                                         // Set the color to be the normal shade of the Card
+        batch.draw(this.currentSkin, this.x, this.y, this.width, this.height);                                                      // Draw the Card at it's x and y coordinates with it's current skin
+        batch.setColor(1, 1, 1, 1);                                                                                                 // Set the color to be the normal shade of the Card
     }    
 }

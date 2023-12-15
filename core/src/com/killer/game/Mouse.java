@@ -10,8 +10,8 @@ import com.badlogic.gdx.math.Vector3;
 public class Mouse {
     
     // FIELDS
-    private static Vector3 gameCoordinates = new Vector3();                                         // A Vector3 to hold the Mouse's converted coordinates (Mouse coordinates to Game coordinates)
-    private static float clickCooldown = 0;                                                             // A timer to limit click speed
+    private static Vector3 gameCoordinates = new Vector3();                                          // A Vector3 to hold the Mouse's converted coordinates (Mouse coordinates to Game coordinates)
+    private static float clickCooldown = 0;                                                          // A timer to limit click speed
     
     // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     
@@ -35,14 +35,14 @@ public class Mouse {
     // Returns the mouse's x-coordinate
     public static int getX() {
         gameCoordinates.x = Gdx.input.getX();                                                       // Get the mouse's x-coordinate in mouseCoords
-        Killer.camera.unproject(gameCoordinates);                                       // Convert from mouseCoords to gameCoords
+        Killer.camera.unproject(gameCoordinates);                                                   // Convert from mouseCoords to gameCoords
         return (int) gameCoordinates.x;                                                             // Return the x-coordinate in gameCoords
     }
     
     // Returns the mouse's y-coordinate
     public static int getY() {
         gameCoordinates.y = Gdx.input.getY();                                                       // Get the mouse's y-coordinate in mouseCoords
-        Killer.camera.unproject(gameCoordinates);                                       // Convert from mouseCoords to gameCoords
+        Killer.camera.unproject(gameCoordinates);                                                   // Convert from mouseCoords to gameCoords
         return (int) gameCoordinates.y;                                                             // Return the y-coordinate in gameCoords
     }
     

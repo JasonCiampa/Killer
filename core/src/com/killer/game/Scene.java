@@ -29,8 +29,8 @@ public abstract class Scene {
     // CONSTRUCTOR //
     protected Scene(String pathToBackgroundImage, String pathToBackgroundMusic, int x, int y) {
         totalScenes++;                                                                                                                                                // Increase total scene count by 1 since we're creating a new one
-        this.backgroundImage = new Texture(Gdx.files.internal(pathToBackgroundImage));                                                                      // Sets background image
-        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(pathToBackgroundMusic));                                                               // Sets background music
+        this.backgroundImage = new Texture(Gdx.files.internal(pathToBackgroundImage));                                                                                // Sets background image
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(pathToBackgroundMusic));                                                                         // Sets background music
         this.x = x;                                                                                                                                                   // Sets x-coordinate
         this.y = y;                                                                                                                                                   // Sets y-coordinate
         this.width = backgroundImage.getWidth();                                                                                                                      // Sets width to the width of the image
@@ -44,7 +44,7 @@ public abstract class Scene {
     
     // Plays the Scene's background music
     protected void playMusic() {
-        this.backgroundMusic.setLooping(true);                                                                                                                // Enables looping for the Scene's background music
+        this.backgroundMusic.setLooping(true);                                                                                                                         // Enables looping for the Scene's background music
         this.backgroundMusic.play();                                                                                                                                   // Begins to play the Scene's background music
         this.backgroundMusic.setVolume((float) 0.25);                                                                                                                  // Lowers the volume to 25% for the Scene's background music
     }
@@ -63,13 +63,13 @@ public abstract class Scene {
     
     // Disables the Scene
     protected void disable() {
-        this.stopMusic();                                                                                                                                             // Stop this Scene's music
+        this.stopMusic();                                                                                                                                             
     }
     
     // Creates a new Button object and adds it to the Scene's ArrayList of Buttons.
     protected void updateButtons() {
         for (Button button: this.buttons) {                                                                                                                           // For each Button in titleScreen...
-            button.update();
+            button.update();                                                                                                                                              // Update the Button
         }
     }
     
