@@ -141,7 +141,7 @@ public class GameHandler {
         return true;                                                                                                                                                                                // Return true because this is a proper singles move
     }
     
-        // Returns whether or not the given Cards are valid doubles
+    // Returns whether or not the given Cards are valid doubles
     public boolean validateDoubles(Deck cards) {
         if (cards.getSize() != 2) {                                                                                                                                                               // If there are not exactly two Cards...
             return false;                                                                                                                                                                             // Return false because this isn't a proper doubles move
@@ -318,7 +318,7 @@ public class GameHandler {
             tempDeck.addCard(this.hands[this.turnToPlay].getCard(cardIndices.get(i)));                                                                                                // Use the cardIndex to copy the Card from the current turn hand 
         }
 
-        if (this.roundType == SINGLES) {                                                                                                                                                            // If the roundType is singles...
+        if (this.roundType == SINGLES) {                                                                                                                                                        // If the roundType is singles...
             if (tempDeck.getSize() == 1) {                                                                                                                                                              // If there is only one Card in the move...
                 return this.validateSingles(tempDeck.getCard(0));                                                                                                                             // Return whether or not the Card passed in is a valid singles move
             }
